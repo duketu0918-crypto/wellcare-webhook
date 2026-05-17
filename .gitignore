@@ -1,0 +1,24 @@
+﻿# Virtual Environment
+venv/
+env/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local config
+config.ini
+
+# Assets (local only)
+assets/
+carousel_images/
