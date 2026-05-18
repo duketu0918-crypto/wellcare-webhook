@@ -34,7 +34,12 @@ def load_stores():
 
 def load_carousel():
     with open(CAROUSEL_FILE, "r", encoding="utf-8") as f:
-        return json.load(f).get("carousel_cards", [])
+        data = json.load(f)
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        return data.get("carousel_cards", data.get("cards", []))
+    return []
 
 def get_store(code):
     return next((s for s in load_stores() if s["store_code"] == code), None)
@@ -154,7 +159,7 @@ def webhook(store_code):
     def handle_postback(event):
         data = event.postback.data
         logger.info(f"[{store_code}] Postback: {data}")
-        if "action=show_carousel" in data:
+        if data.strip() == "show_carousel" or "show_carousel" in data:
             send_carousel(line_bot_api, event.reply_token, store_code)
 
     def send_carousel(api, reply_token, code):
