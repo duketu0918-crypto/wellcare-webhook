@@ -1,129 +1,200 @@
-﻿{
-  "stores": [
-    {
-      "store_code": "L07",
-      "store_name": "維康醫療用品(梧棲童綜合院內店)",
-      "address": "43503臺中市梧棲區台灣大道八段699號B1樓 童綜合醫院B1樓",
-      "phone": "0426560725",
-      "google_map_url": "https://maps.app.goo.gl/TyKFbRSyruXvGNnV9",
-      "channel_access_token": "rEDB7KXEhBGSG7ss/ySz2/zu9jsCXWOwahpn26b3ca6gkGpMgkXU9GBQ+J2++yZvDT/uB7IddTw7p1okeg4zPLP8SZA/1cP27SS7EtQVVuvDaK9reTnhLE8mw8MdbwEhamwUIzMhUH6RtUBDNSHHUAdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "88af336db78219335e0fcdfaa4f82e5d",
-      "active": true
-    },
-    {
-      "store_code": "L08",
-      "store_name": "維康醫療用品(向上光田一店)",
-      "address": "433臺中市沙鹿區向上路七段127號光田醫院向上院區3樓之2",
-      "phone": "0426366981",
-      "google_map_url": "https://maps.app.goo.gl/qFegV3sY8djZrNgm6",
-      "channel_access_token": "GzgkQH1HRSvZqwWnpLx+XOoNBRE9FDqMqPFR6uzVt4PjkxdEohu4HBl+G4D3qw5N/vY35r8mUWRO8Dl1KR7JjASAkBAefjtG0Pr35hSJIjISI4/hRdFX0ipR+dcwg3N9VyR9NdAU0KraiP7dBfcZxwdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "6f4d5393aa6588ad5247ca3da978b51b",
-      "active": true
-    },
-    {
-      "store_code": "L22",
-      "store_name": "維康醫療用品(大甲光田店)",
-      "address": "437臺中市大甲區經國路321號",
-      "phone": "0426885312",
-      "google_map_url": "https://maps.app.goo.gl/ghnWi9V8vz68kUQ59",
-      "channel_access_token": "uAzEcLI9PHkKztSPHCaM16/vRbFoss2VCLzbbrLejUywOab8gHa31u3bBF0Dg8EvRxe7ny7yN5NcwfcCtIhfB62eLcGTeJ8FjCHrN3DieDWN4Wqncuf98ZG3fxhw1VniW3mIhCd2OR86o1SZEgUnyAdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "5728db2826ae3016bf6f35eaa363537a",
-      "active": true
-    },
-    {
-      "store_code": "L47",
-      "store_name": "維康醫療用品(沙鹿光田店)",
-      "address": "43303臺中市沙鹿區沙田路117號沙鹿光田醫院1樓",
-      "phone": "0426622322",
-      "google_map_url": "https://maps.app.goo.gl/dCrF2Rhy5Tv4wMPX7",
-      "channel_access_token": "sW9xmJUMomugMh1gnp5VucWkUM9r15DKz4TQ60JZIniu8shZ4Gcadx7cJjx8FvajNNEMSWDRN+Ze4C+mNB0X5ogvQfFYfJ8dQuo7YdY0QNZIKaIzA5WOeCBIB+gRpU96oyWrqqYSBUm41OqWjhQrcwdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "d73cef1f7bc0b0d045845f76ba31ddcb",
-      "active": true
-    },
-    {
-      "store_code": "L50",
-      "store_name": "維康醫療用品(清泉店)",
-      "address": "42854臺中市大雅區雅潭路四段80號清泉醫院1樓",
-      "phone": "0425606895",
-      "google_map_url": "https://maps.app.goo.gl/dVeqmFJgCLmFjQ7Z7",
-      "channel_access_token": "",
-      "channel_secret": "",
-      "active": false
-    },
-    {
-      "store_code": "L80",
-      "store_name": "維康醫療用品(梧棲童綜合店)",
-      "address": "435臺中市梧棲區文華街194巷60號",
-      "phone": "0426564229",
-      "google_map_url": "https://maps.app.goo.gl/nN7Z9hRdUGSKZDCo6",
-      "channel_access_token": "1IK+kIFqfmtQctwGboCpwOnuEBOFUZqYmPitsWHmHQtctZU6wgoes6fa4nEw7HdtwFg5/vpCuuJkroV7dfMcbCunMqz6KuXnKnyCWZQJVma3yqCjE7kl382j2yc4V+A9Zyi9sNkkfSZGwB9WC+v5MgdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "235f0cc0b2589c944ef0b95d4077584a",
-      "active": true
-    },
-    {
-      "store_code": "N05",
-      "store_name": "維康醫療用品(彰基二林店)",
-      "address": "526彰化縣二林鎮大成路一段558號1號 醫院二林分院樓 彰基",
-      "phone": "048956410",
-      "google_map_url": "https://maps.app.goo.gl/2UH8yePFp3uKkgdT9",
-      "channel_access_token": "wXGwXTpXHXw76a4iTCIdd2irFaGtWGS1S/d4NGiFaDlzmVrpsKRb3UHCFZoH5wzRV5wojtrUaPEG/YQWY4oI4z6GeufftDAzNmPU5oBQlUPpsBGXpfTrR2a3yro5Ay912v95FgYZq/202ulwv5ndEQdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "eb2867f562f13d82a98b2ba348285f94",
-      "active": true
-    },
-    {
-      "store_code": "N06",
-      "store_name": "維康醫療用品(部立彰化店)",
-      "address": "513彰化縣埔心鄉中正路二段80號",
-      "phone": "048285812",
-      "google_map_url": "https://maps.app.goo.gl/XHwLyxTJK9EtfL4C8",
-      "channel_access_token": "ckHO5C8P3KYs8RWlju3xdBY/IKrZ/0FIxstE8Gef1KfPOSwiD5pkpCJ6WmBnxBuefRkJqcpH8jUBmk8cyxbqd98y0bdUhenSNB9SVRYAs2IcO046h9hTb2u28rsCgs+Rp4Wi2KeWmtXpYOLrRP2u3gdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "6c6903e171143a31e5363d8c895a54b0",
-      "active": true
-    },
-    {
-      "store_code": "N08",
-      "store_name": "維康醫療用品(員榮院外店)",
-      "address": "51045彰化縣員林市中正路195號1號員榮醫院旁",
-      "phone": "048367521",
-      "google_map_url": "https://maps.app.goo.gl/oWzJ7u1q4tJT6MNv9",
-      "channel_access_token": "CZHCBO5/iwV3wCUyyAj01W8zmLXvm1Z2s+12nFdCv5F36RruKj5rqfwPrkznWDYtZ6perSQPrQXcSc/mtQTucv+Ay2EKXwQcCcrjVuXRs2G15drPFSDSgafzBnm6d1RXjHsRp+aFZzKBFDToRMBktwdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "6d6bc8f843eab479f241458f7fe5e308",
-      "active": true
-    },
-    {
-      "store_code": "N09",
-      "store_name": "維康醫療用品(鹿基院外店)",
-      "address": "50544彰化縣鹿港鎮中正路428號",
-      "phone": "047782587",
-      "google_map_url": "https://maps.app.goo.gl/MP5gNT4o8azL41G3A",
-      "channel_access_token": "keDyGOEVyxN7Ju/kfxpMG9bUKgCryUDL79AmkiZeoo6PcYo/Nwcojat8n32urwYzgHS2ZRsqXsCyI13uqxDOQgXpKliohZabQlbl9bvkDabIvcS4i9+sIM9g5/B5nqCFICkzeVIzB6A5htfqUbQJwgdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "92b54036c1a0ca7e1ecd9bbc363c61c1",
-      "active": true
-    },
-    {
-      "store_code": "N10",
-      "store_name": "維康醫療用品(員基院外店)",
-      "address": "51048彰化縣員林市新義街286號",
-      "phone": "048391676",
-      "google_map_url": "https://maps.app.goo.gl/BRpN6i9dCsi236HW8",
-      "channel_access_token": "0HOXO/A9hEuFjW+ztMYgymlVJqAKgcDDoaXZaOjYZzJ3pwHqckYT9mxY6aOANXeu8KRFfo1K9C8Css+MRwNBKdHPkyoy1AiMFrPSkPYH304WJVQYoutylEdPjEVFfzfmSkKzFrcPvQEUhEL7Ql+bBgdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "75b567ce8f10ceaac7f48b4465f0ee20",
-      "active": true
-    },
-    {
-      "store_code": "N15",
-      "store_name": "維康醫療用品(彰基中華店)",
-      "address": "500彰化縣彰化市中華路176號中華院區大廳1樓彰化基督教醫院",
-      "phone": "047238910",
-      "google_map_url": "https://maps.app.goo.gl/U2rDz1YjyEKPWY9y9",
-      "channel_access_token": "4nBNgmKCXSpHsrr4wnUJB/u2PnvScx9nzMoCiYuSU0KxEAT5LeoLNzBR73+NRtEr+IfqUNRDsQUg12gnv2tox27huhJSXFeSQsrhUnQuHDQuN15ZvnAiIpZ7fWnnrpfQzAiK7IoCIb5mjXImhTKHnwdB04t89/1O/w1cDnyilFU=",
-      "channel_secret": "b168b643c7be2eb6998a4fd090af1337",
-      "active": true
-    },
-    {
-      "store_code": "N33",
-      "store_name": "維康醫療用品(秀傳店)",
-      "address": "50049彰化縣彰化市中山路一段562號1F",
-      "phone": "047270813",
-      "google_map_url": "https://maps.app.goo.gl/w24KubyqtV8QKin89",
-      "channel_access_token": "p4htmaSQKcGWr5BsgdfRkmbzIuoK8wewbYa+ZUFLiu8TsR0uFrVRUSDur/Z/niLQFa3bPlx3ylFRCxw1umc+au/1n7
+[
+  {
+    "id": "L07",
+    "name": "維康醫療用品(梧棲童綜合院內店)",
+    "address": "43503臺中市梧棲區台灣大道八段699號B1樓 童綜合醫院B1樓",
+    "phone": "0426560725",
+    "google_map_url": "https://maps.app.goo.gl/TyKFbRSyruXvGNnV9",
+    "channel_access_token": "rEDB7KXEhBGSG7ss/ySz2/zu9jsCXWOwahpn26b3ca6gkGpMgkXU9GBQ+J2++yZvDT/uB7IddTw7p1okeg4zPLP8SZA/1cP27SS7EtQVVuvDaK9reTnhLE8mw8MdbwEhamwUIzMhUH6RtUBDNSHHUAdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "88af336db78219335e0fcdfaa4f82e5d",
+    "rich_menu_id": "richmenu-261aecff9fa6f2872eaf923030a4d3b7",
+    "status": "active"
+  },
+  {
+    "id": "L08",
+    "name": "維康醫療用品(向上光田一店)",
+    "address": "433臺中市沙鹿區向上路七段127號光田醫院向上院區3樓之2",
+    "phone": "0426366981",
+    "google_map_url": "https://maps.app.goo.gl/qFegV3sY8djZrNgm6",
+    "channel_access_token": "GzgkQH1HRSvZqwWnpLx+XOoNBRE9FDqMqPFR6uzVt4PjkxdEohu4HBl+G4D3qw5N/vY35r8mUWRO8Dl1KR7JjASAkBAefjtG0Pr35hSJIjISI4/hRdFX0ipR+dcwg3N9VyR9NdAU0KraiP7dBfcZxwdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "6f4d5393aa6588ad5247ca3da978b51b",
+    "rich_menu_id": "richmenu-1841261a2965542b2c3f359364b28204",
+    "status": "active"
+  },
+  {
+    "id": "L22",
+    "name": "維康醫療用品(大甲光田店)",
+    "address": "437臺中市大甲區經國路321號",
+    "phone": "0426885312",
+    "google_map_url": "https://maps.app.goo.gl/ghnWi9V8vz68kUQ59",
+    "channel_access_token": "uAzEcLI9PHkKztSPHCaM16/vRbFoss2VCLzbbrLejUywOab8gHa31u3bBF0Dg8EvRxe7ny7yN5NcwfcCtIhfB62eLcGTeJ8FjCHrN3DieDWN4Wqncuf98ZG3fxhw1VniW3mIhCd2OR86o1SZEgUnyAdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "5728db2826ae3016bf6f35eaa363537a",
+    "rich_menu_id": "richmenu-b4dceb672b80731d47f61a043c536de2",
+    "status": "active"
+  },
+  {
+    "id": "L47",
+    "name": "維康醫療用品(沙鹿光田店)",
+    "address": "43303臺中市沙鹿區沙田路117號沙鹿光田醫院1樓",
+    "phone": "0426622322",
+    "google_map_url": "https://maps.app.goo.gl/dCrF2Rhy5Tv4wMPX7",
+    "channel_access_token": "sW9xmJUMomugMh1gnp5VucWkUM9r15DKz4TQ60JZIniu8shZ4Gcadx7cJjx8FvajNNEMSWDRN+Ze4C+mNB0X5ogvQfFYfJ8dQuo7YdY0QNZIKaIzA5WOeCBIB+gRpU96oyWrqqYSBUm41OqWjhQrcwdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "d73cef1f7bc0b0d045845f76ba31ddcb",
+    "rich_menu_id": "richmenu-328646efca957c554aed9723fe648bfc",
+    "status": "active"
+  },
+  {
+    "id": "L50",
+    "name": "維康醫療用品(清泉店)",
+    "address": "42854臺中市大雅區雅潭路四段80號清泉醫院1樓",
+    "phone": "0425606895",
+    "google_map_url": "https://maps.app.goo.gl/dVeqmFJgCLmFjQ7Z7",
+    "channel_access_token": "",
+    "channel_secret": "",
+    "rich_menu_id": "",
+    "status": "active"
+  },
+  {
+    "id": "L80",
+    "name": "維康醫療用品(梧棲童綜合店)",
+    "address": "435臺中市梧棲區文華街194巷60號",
+    "phone": "0426564229",
+    "google_map_url": "https://maps.app.goo.gl/nN7Z9hRdUGSKZDCo6",
+    "channel_access_token": "1IK+kIFqfmtQctwGboCpwOnuEBOFUZqYmPitsWHmHQtctZU6wgoes6fa4nEw7HdtwFg5/vpCuuJkroV7dfMcbCunMqz6KuXnKnyCWZQJVma3yqCjE7kl382j2yc4V+A9Zyi9sNkkfSZGwB9WC+v5MgdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "235f0cc0b2589c944ef0b95d4077584a",
+    "rich_menu_id": "richmenu-32c1db1f35eb7a3ee1e8b6ff499fd6eb",
+    "status": "active"
+  },
+  {
+    "id": "N05",
+    "name": "維康醫療用品(彰基二林店)",
+    "address": "526彰化縣二林鎮大成路一段558號1號 醫院二林分院樓",
+    "phone": "048956410",
+    "google_map_url": "https://maps.app.goo.gl/2UH8yePFp3uKkgdT9",
+    "channel_access_token": "wXGwXTpXHXw76a4iTCIdd2irFaGtWGS1S/d4NGiFaDlzmVrpsKRb3UHCFZoH5wzRV5wojtrUaPEG/YQWY4oI4z6GeufftDAzNmPU5oBQlUPpsBGXpfTrR2a3yro5Ay912v95FgYZq/202ulwv5ndEQdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "eb2867f562f13d82a98b2ba348285f94",
+    "rich_menu_id": "richmenu-3c5a2bb5559856776b525096b28dcc27",
+    "status": "active"
+  },
+  {
+    "id": "N06",
+    "name": "維康醫療用品(部立彰化店)",
+    "address": "513彰化縣埔心鄉中正路二段80號",
+    "phone": "048285812",
+    "google_map_url": "https://maps.app.goo.gl/XHwLyxTJK9EtfL4C8",
+    "channel_access_token": "ckHO5C8P3KYs8RWlju3xdBY/IKrZ/0FIxstE8Gef1KfPOSwiD5pkpCJ6WmBnxBuefRkJqcpH8jUBmk8cyxbqd98y0bdUhenSNB9SVRYAs2IcO046h9hTb2u28rsCgs+Rp4Wi2KeWmtXpYOLrRP2u3gdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "6c6903e171143a31e5363d8c895a54b0",
+    "rich_menu_id": "richmenu-cc94d26b2173da748d9bba4653e92d85",
+    "status": "active"
+  },
+  {
+    "id": "N08",
+    "name": "維康醫療用品(員榮院外店)",
+    "address": "51045彰化縣員林市中正路195號1號員榮醫院旁",
+    "phone": "048367521",
+    "google_map_url": "https://maps.app.goo.gl/oWzJ7u1q4tJT6MNv9",
+    "channel_access_token": "CZHCBO5/iwV3wCUyyAj01W8zmLXvm1Z2s+12nFdCv5F36RruKj5rqfwPrkznWDYtZ6perSQPrQXcSc/mtQTucv+Ay2EKXwQcCcrjVuXRs2G15drPFSDSgafzBnm6d1RXjHsRp+aFZzKBFDToRMBktwdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "6d6bc8f843eab479f241458f7fe5e308",
+    "rich_menu_id": "richmenu-cdb5545b3752a6c132bfa1c45ed63500",
+    "status": "active"
+  },
+  {
+    "id": "N09",
+    "name": "維康醫療用品(鹿基院外店)",
+    "address": "50544彰化縣鹿港鎮中正路428號",
+    "phone": "047782587",
+    "google_map_url": "https://maps.app.goo.gl/MP5gNT4o8azL41G3A",
+    "channel_access_token": "keDyGOEVyxN7Ju/kfxpMG9bUKgCryUDL79AmkiZeoo6PcYo/Nwcojat8n32urwYzgHS2ZRsqXsCyI13uqxDOQgXpKliohZabQlbl9bvkDabIvcS4i9+sIM9g5/B5nqCFICkzeVIzB6A5htfqUbQJwgdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "92b54036c1a0ca7e1ecd9bbc363c61c1",
+    "rich_menu_id": "richmenu-c6ae25ddcace1005cff85b9715c55500",
+    "status": "active"
+  },
+  {
+    "id": "N10",
+    "name": "維康醫療用品(員基院外店)",
+    "address": "51048彰化縣員林市新義街286號",
+    "phone": "048391676",
+    "google_map_url": "https://maps.app.goo.gl/BRpN6i9dCsi236HW8",
+    "channel_access_token": "0HOXO/A9hEuFjW+ztMYgymlVJqAKgcDDoaXZaOjYZzJ3pwHqckYT9mxY6aOANXeu8KRFfo1K9C8Css+MRwNBKdHPkyoy1AiMFrPSkPYH304WJVQYoutylEdPjEVFfzfmSkKzFrcPvQEUhEL7Ql+bBgdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "75b567ce8f10ceaac7f48b4465f0ee20",
+    "rich_menu_id": "richmenu-9c4b9c57a14f2f3fe33c89c64700f9b3",
+    "status": "active"
+  },
+  {
+    "id": "N15",
+    "name": "維康醫療用品(彰基中華店)",
+    "address": "500彰化縣彰化市中華路176號中華院區大廳1樓彰化基督教醫院",
+    "phone": "047238910",
+    "google_map_url": "https://maps.app.goo.gl/U2rDz1YjyEKPWY9y9",
+    "channel_access_token": "4nBNgmKCXSpHsrr4wnUJB/u2PnvScx9nzMoCiYuSU0KxEAT5LeoLNzBR73+NRtEr+IfqUNRDsQUg12gnv2tox27huhJSXFeSQsrhUnQuHDQuN15ZvnAiIpZ7fWnnrpfQzAiK7IoCIb5mjXImhTKHnwdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "b168b643c7be2eb6998a4fd090af1337",
+    "rich_menu_id": "richmenu-527d46c2effd40dbad5debd3e1f4d82a",
+    "status": "active"
+  },
+  {
+    "id": "N33",
+    "name": "維康醫療用品(秀傳店)",
+    "address": "50049彰化縣彰化市中山路一段562號1F",
+    "phone": "047270813",
+    "google_map_url": "https://maps.app.goo.gl/w24KubyqtV8QKin89",
+    "channel_access_token": "p4htmaSQKcGWr5BsgdfRkmbzIuoK8wewbYa+ZUFLiu8TsR0uFrVRUSDur/Z/niLQFa3bPlx3ylFRCxw1umc+au/1n7FHhulXc3XJQ5nOGmQJfeqYAlaBSrTvSvRxQ0wmi02399iyvkGmoGkNH9MDSAdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "c9662fca9f5d04b689670ac7b6da54e0",
+    "rich_menu_id": "richmenu-0c63484e61cff06410ff3db2ad83e000",
+    "status": "active"
+  },
+  {
+    "id": "P01",
+    "name": "維康醫療用品(若瑟便利店)",
+    "address": "63241雲林縣虎尾鎮新生路74號若瑟醫院1樓",
+    "phone": "056363765",
+    "google_map_url": "https://maps.app.goo.gl/AV8UM48fpvF8wwa46",
+    "channel_access_token": "WoesxhJiv5ogdspD9JIdtMMcBp4WWJH8Xufq3fcTAD4EDYsK+jcEU8bGnfws4nBNDE63V05uilLjFCAU0ffxNEv/hE1lyXRostx6jQhMaVMmw77VoTjAzaacXG76ir4f2m0YQ4lfscWRUCXLxRJPeAdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "166e06d768e5219ce55c91a7d5efab69",
+    "rich_menu_id": "richmenu-a58d7e35b1599d7546ef27f4d74e73ba",
+    "status": "active"
+  },
+  {
+    "id": "P03",
+    "name": "維康醫療用品(台大斗六院外店)",
+    "address": "64054雲林縣斗六市埤口路88號",
+    "phone": "055376634",
+    "google_map_url": "https://maps.app.goo.gl/bQDY6KHdMvhRBGM77",
+    "channel_access_token": "3a+QAim6WAP6uQoIlAcb3rOKmDqg8TvVc5JDVTRBcWGLVQlFq3INlj6eJjQUPz+QCj9fmV/mjvo8jP1fCpPfrfr1w+jZdNWTPyv2mB7A0s1UY+2LegZEDJEUIs0R+LKOWQGl4ZttYZTDC+e1tEihnAdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "75b9a603314cee2b064a3403bdfdb9c7",
+    "rich_menu_id": "richmenu-e7f4b306d81ea98295354092496a9e12",
+    "status": "active"
+  },
+  {
+    "id": "P05",
+    "name": "維康醫療用品(慈濟斗六院外店)",
+    "address": "640雲林縣斗六市雲林路二段297-50號",
+    "phone": "055320285",
+    "google_map_url": "https://maps.app.goo.gl/CP15SMAYF4WBvgfY8",
+    "channel_access_token": "eyV4YgeSguHwWEcLT7ogLgdrtcLXiMbCg4NA+CGEJx53ztRbNvBcP2OMiO1ai0AwoVEhfV+kwIK9MSGXIE9LynOPMNFh361n+OARYCzPoP/fu9r6IknCdBKC5eJV7G67J1s+gPBUU+z3u1pdL76ZEwdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "5ba867cc06f7d814ceda9a6e2f861030",
+    "rich_menu_id": "richmenu-c408eca89bde7599c6610e98e6f78284",
+    "status": "active"
+  },
+  {
+    "id": "P13",
+    "name": "維康醫療用品(若瑟便利店P13)",
+    "address": "63241雲林縣虎尾鎮新生路74號若瑟醫院1樓",
+    "phone": "056363765",
+    "google_map_url": "https://maps.app.goo.gl/AV8UM48fpvF8wwa46",
+    "channel_access_token": "Xu93/glmsZ6F9lT0ogSP8P5BPbegqEiErBMOIVwI9y6jwcSV3PAHywojsMxOespalJtRKaFJJecePMMAzzTm1f726UZoBZ1MNIi8qYRHPrYH8dT+NWNYk///+Lc8+GmYJN2sABJ3l9yv2v+k3713JwdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "d54160cc2a6b120bf347ba44d0cb6817",
+    "rich_menu_id": "richmenu-fe551fa3f52541f41d4ddb144b449c04",
+    "status": "active"
+  },
+  {
+    "id": "R68",
+    "name": "維康醫療用品(彰基藥局)",
+    "address": "500彰化縣彰化市博愛街133號彰化基督教醫院大門對面",
+    "phone": "047279446",
+    "google_map_url": "https://maps.app.goo.gl/GVT6rCQ6TBHUdnkx5",
+    "channel_access_token": "VkL+iZt7LUUu4m4fIiJrJA0wOD4Rb+IEOK2fLSAljH7lSkPM554m/4m3258Tt6Cap2KsGU9g1/Fpzvpg2lQE4Brw9EuuiQdHhQMv0/CSKFJ8bIgO6DkMsYdrIxVt9vdTxMooTlgCv2k1omT/+GOCXAdB04t89/1O/w1cDnyilFU=",
+    "channel_secret": "bb65faa7d40b751b63eac1fda7d2d846",
+    "rich_menu_id": "richmenu-bc629f08563612d7d2087cb7879958cf",
+    "status": "active"
+  }
+]
