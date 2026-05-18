@@ -22,3 +22,12 @@ config.ini
 # Assets (local only)
 assets/
 carousel_images/
+# 臨時修復腳本
+fix*.py
+build_*.py
+check_stores.py
+rebuild_*.py
+test_local.py
+verify_*.py
+write_new_gui.py
+*.bak
