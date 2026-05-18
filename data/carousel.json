@@ -1,11 +1,29 @@
-[
+﻿[
   {
-    "title": "維康醫療用品",
-    "text": "專業醫療器材，守護您的健康",
-    "thumbnail_image_url": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E4%BF%9D%E5%81%A5%E7%87%9F%E9%A4%8A%E5%93%81%E6%97%A5%E5%B8%B8%E7%94%A8%E5%93%81/%E7%88%B6%E5%87%BA%E7%9C%9F%E6%84%9B%E7%B2%BE%E9%81%B8%E6%9C%83%E5%A0%B4",
+    "title": "維康醫療用品 - 居家照護",
+    "text": "專業居家照護產品，守護您的健康生活",
+    "thumbnail_image_url": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E4%BF%9D%E9%9A%9C%E5%BA%8A%E5%A2%8A.jpg",
     "action_type": "uri",
+    "action_label": "查看產品",
     "action_value": "https://www.wellcare.com.tw",
-    "action_label": "前往官網",
+    "enabled": true
+  },
+  {
+    "title": "維康醫療用品 - 輔具租借",
+    "text": "輪椅、助行器、病床等輔具租借服務",
+    "thumbnail_image_url": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E4%BF%9D%E9%9A%9C%E5%BA%8A%E5%A2%8A.jpg",
+    "action_type": "uri",
+    "action_label": "了解更多",
+    "action_value": "https://www.wellcare.com.tw",
+    "enabled": true
+  },
+  {
+    "title": "維康醫療用品 - 門市據點",
+    "text": "全台18家門市，就近為您服務",
+    "thumbnail_image_url": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E4%BF%9D%E9%9A%9C%E5%BA%8A%E5%A2%8A.jpg",
+    "action_type": "uri",
+    "action_label": "找門市",
+    "action_value": "https://www.wellcare.com.tw",
     "enabled": true
   }
 ]
