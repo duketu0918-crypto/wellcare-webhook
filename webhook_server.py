@@ -57,16 +57,26 @@ def build_carousel_flex(cards):
     for card in cards:
         if not card.get("enabled", True):
             continue
-        atype = card.get("action_type", "uri")
-        aval  = card.get("action_value", "")
-        albl  = card.get("action_label", "了解更多")
-
-        if atype == "uri":
-            action = {"type": "uri", "label": albl, "uri": aval}
+        # 優先使用新版 actions 陣列，fallback 到舊版欄位
+        actions_list = card.get("actions", [])
+        if actions_list:
+            a = actions_list[0]
+            atype = a.get("type", "uri")
+            albl  = a.get("label", "了解更多")
+            if atype == "uri":
+                action = {"type": "uri", "label": albl, "uri": a.get("uri", a.get("url", ""))}
+            else:
+                action = {"type": "message", "label": albl, "text": a.get("text", "")}
         else:
-            action = {"type": "message", "label": albl, "text": aval}
+            atype = card.get("action_type", "uri")
+            aval  = card.get("action_value", "")
+            albl  = card.get("action_label", "了解更多")
+            if atype == "uri":
+                action = {"type": "uri", "label": albl, "uri": aval}
+            else:
+                action = {"type": "message", "label": albl, "text": aval}
 
-        img_url = card.get("thumbnail_image_url", "")
+        img_url = card.get("thumbnailImageUrl", card.get("thumbnail_image_url", ""))
 
         bubble = {
             "type": "bubble",
@@ -187,13 +197,7 @@ def webhook(store_id):
         if any(k in text for k in keywords):
             send_carousel(event.reply_token)
         else:
-            name = store.get("name", store_id)
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(
-                    text=f"您好！歡迎光臨維康醫療用品 {name}。\n請點選下方選單或輸入「商品目錄」查看產品。"
-                )
-            )
+            logger.info(f"[{store_id}] 非關鍵字訊息，靜默不回應: {text}")
 
     @handler.add(PostbackEvent)
     def handle_postback(event):
