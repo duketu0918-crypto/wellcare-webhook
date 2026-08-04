@@ -1,0 +1,560 @@
+﻿{
+  "L22": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/ghnWi9V8vz68kUQ59"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/TBRUS"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-4dd6d8a1c7e67d7247b165763eab3cba",
+    "menu_name": "L22主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "R68": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！\n"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/GVT6rCQ6TBHUdnkx5"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/SYAK5"
+      },
+      "6": {
+        "type": "uri",
+        "action": "https://pg.qrpay.tw/cd/P_2n0KK4Bey?code=wellcare_d95cb27e80de0754"
+      }
+    },
+    "rich_menu_id": "richmenu-0a53e4c15cd50a5a03da0d223a3ad299",
+    "menu_name": "R68主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "N09": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/MP5gNT4o8azL41G3A"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/QSEFU"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-39d73d338387d6e26966118656ef1be1",
+    "menu_name": "N09主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "N15": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/U2rDz1YjyEKPWY9y9"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/OHyWO"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-749a281ac7d2cc37777a7894107e8435",
+    "menu_name": "N15主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "L07": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/TyKFbRSyruXvGNnV9"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/TC2KW"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-f718b039fa2b590a6c8a0c4ce4f68a42",
+    "menu_name": "L07主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control_OLD/素材＃/115年88節 LINE menu-壓新01.jpg"
+  },
+  "L80": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/nN7Z9hRdUGSKZDCo6"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/T89XD"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 並直接傳送至本聊天室。\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n4.即刻完成：收到訊息即代表付款成功！\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-f12f4b1d1949b888512d8abe1269918e",
+    "menu_name": "L80主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "P13": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/AV8UM48fpvF8wwa46"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/T3LFL"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-1b0afe518a1e83ef1b2534ad5afe78fe",
+    "menu_name": "P13主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "P05": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/CP15SMAYF4WBvgfY8"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/ynhge"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-386051854791aa43e3f74bc1fe7c9813",
+    "menu_name": "P05主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "L47": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 每天2包，照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/dCrF2Rhy5Tv4wMPX7"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/S3LWT"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-16967b4d2d56a9a63e953037c7a8995a",
+    "menu_name": "L47主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "N05": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/2UH8yePFp3uKkgdT9"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/KMVLB"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-59a99c0d782bc3a308406c4fc6f8ce05",
+    "menu_name": "N05主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "N33": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/w24KubyqtV8QKin89"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/S8LJP"
+      },
+      "6": {
+        "type": "message",
+        "action": "\n【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-3da40e6155e96b54070130235c156df3",
+    "menu_name": "N33主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "N08": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/oWzJ7u1q4tJT6MNv9"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/STJZ9"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-2ad4a3e1262240e9783e7f3f17e81a01",
+    "menu_name": "N08主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "N10": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/BRpN6i9dCsi236HW8"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/QFNVC"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-d6cd19d9acd9cf2915da3d69ae7dc547",
+    "menu_name": "N10主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "L08": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/qFegV3sY8djZrNgm6"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/etxZ5"
+      },
+      "6": {
+        "type": "message",
+        "action": "\n【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-08005b905223cf5ae5c238c70f7fb9f4",
+    "menu_name": "L08主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年88節 LINE menu-壓新01.jpg"
+  },
+  "L50": {
+    "blocks": {
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/T89XD"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/dVeqmFJgCLmFjQ7Z7"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 並直接傳送至本聊天室。\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n4.即刻完成：收到訊息即代表付款成功！\n💡 操作若有疑問，請直接留言或電話詢問"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "2": {
+        "type": "message",
+        "action": "【守護您日夜的好魚油~】\n※ 植化素協同增強效果 專利萃取技術芝麻素，幫助入睡。\n※ QUALITY SILVER® 最高等級製造品質， 無油耗味。\n※ 法國頂級魚油 OmegaVie®品牌低溫冷壓初榨取，超臨界萃取，確保營養及美味 。\n★限量送旅行頸枕"
+      },
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      }
+    },
+    "rich_menu_id": "",
+    "menu_name": "L50主選單",
+    "image_url": "https://drive.google.com/file/d/1_4vgXkjHidXLzFRjAqJYCzaIZwEUCPr-/view?usp=sharing"
+  },
+  "P01": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯) \n✨照顧腸道從現在開始！\n"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/AV8UM48fpvF8wwa46"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/R4YZ8"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-601f4256b9416fc56f0dda5d40fc60fe",
+    "menu_name": "P01主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "P03": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！\n"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/bQDY6KHdMvhRBGM77"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/RZT4U"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-9acc884eb3f64570b6522e4a0a877393",
+    "menu_name": "P03主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  },
+  "N06": {
+    "blocks": {
+      "1": {
+        "type": "postback",
+        "action": "show_carousel"
+      },
+      "2": {
+        "type": "message",
+        "action": "🦠腸道是人體最大的免疫器官\n\nNucode 營養密碼益生菌\n《國際三大專利》 \n•日本森永專利BB536益生菌\n•法國專利啤酒酵母\n•比利時專利菊苣根萃取及硒酵母\n幫助維持消化道機能、促進順暢，打造好體質！ \n\n✨本檔特價買3送1、買5送2、買10送5(再送親水綿毯)\n✨ 照顧腸道從現在開始！"
+      },
+      "3": {
+        "type": "uri",
+        "action": "https://www.wellcare.com.tw/wellcare/tw/product/guide/%E9%95%B7%E6%9C%9F%E7%85%A7%E8%AD%B7%E7%94%A8%E5%93%81/Long-term%20Care%20%E9%95%B7%E7%85%A7%E7%94%A8%E5%93%81"
+      },
+      "4": {
+        "type": "uri",
+        "action": "https://maps.app.goo.gl/XHwLyxTJK9EtfL4C8"
+      },
+      "5": {
+        "type": "uri",
+        "action": "https://r.botbonnie.com/RWYK8"
+      },
+      "6": {
+        "type": "message",
+        "action": "【LINE Pay 線上付款】\n\n1.快速支付：點擊下方選單「LINE Pay 付款」，30 秒內即可完成。\n\n2.截圖回傳：請截圖您的 LINE Pay 付款條碼 →傳送至本聊天室。 \n\n3.掃碼核銷：門市人員收到截圖後會立即掃碼，結帳完成後您將收到確認訊息。\n\n4.即刻完成：收到訊息即代表付款成功！\n\n💡 操作若有疑問，請直接留言或電話詢問"
+      }
+    },
+    "rich_menu_id": "richmenu-b2adf24bc275e37f20cbb1deeb13e4d1",
+    "menu_name": "N06主選單",
+    "image_url": "C:/Users/Duke/Desktop/LineOA_Control/素材＃/115年0623世界賽-壓.png"
+  }
+}

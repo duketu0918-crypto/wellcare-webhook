@@ -1,805 +1,901 @@
 # -*- coding: utf-8 -*-
+"""
+維康醫療用品 LINE OA 總控管理系統
+main_gui.py v2.2.1
+─────────────────────────────────────────────────────────
+修正內容（相對於 v2.2.0）：
+  1. load_carousel()  → 正確解析 {"cards":[...]} 格式
+  2. save_carousel()  → 以 {"cards":[...]} 格式寫回
+  3. _car_load()      → action key 對應修正 (uri/text/data)
+  Rich Menu 程式碼完全未動。
+"""
+
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog, scrolledtext
-import json, os, sys, requests, threading, subprocess
+from tkinter import ttk, messagebox, filedialog
+import json
+import os
+import threading
+import requests
 from datetime import datetime
-import configparser
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-LOGS_DIR = os.path.join(BASE_DIR, "logs")
-STORES_FILE = os.path.join(DATA_DIR, "stores.json")
-CAROUSEL_FILE = os.path.join(DATA_DIR, "carousel.json")
-CONFIG_FILE = os.path.join(BASE_DIR, "config.ini")
-LINE_API_BASE = "https://api.line.me/v2/bot"
+# ── 路徑設定 ──────────────────────────────────────────
+BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR   = os.path.join(BASE_DIR, "data")
+STORES_F   = os.path.join(DATA_DIR, "stores.json")
+RM_CFG_F   = os.path.join(DATA_DIR, "rich_menu_config.json")
+CAROUSEL_F = os.path.join(DATA_DIR, "carousel.json")
 
-COLORS = {
-    "primary": "#06C755",
-    "primary_dark": "#049B42",
-    "secondary": "#1E1E2E",
-    "background": "#F0F2F5",
-    "card_bg": "#FFFFFF",
-    "text_dark": "#1A1A2E",
-    "text_light": "#6B7280",
-    "accent": "#FF6B6B",
-    "warning": "#F59E0B",
-    "success": "#10B981",
-    "error": "#EF4444",
-    "border": "#E5E7EB",
-    "header_bg": "#1A1A2E",
-    "sidebar_bg": "#16213E",
+WEBHOOK_BASE = "https://wellcare-webhook.onrender.com/webhook"
+
+# ── Rich Menu 版面規格 ─────────────────────────────────
+RM_W, RM_H        = 2500, 1689
+HEADER_H          = 280
+BLOCK_Y           = 280
+BLOCK_H           = 704
+BLOCKS_LAYOUT = [
+    {"x":    0, "w":  833},
+    {"x":  833, "w":  834},
+    {"x": 1667, "w":  833},
+    {"x":    0, "w":  833},
+    {"x":  833, "w":  834},
+    {"x": 1667, "w":  833},
+]
+
+# ── 顏色主題 ──────────────────────────────────────────
+C = {
+    "sidebar_bg"  : "#1a2332",
+    "sidebar_sel" : "#00b894",
+    "sidebar_fg"  : "#cdd6e0",
+    "header_bg"   : "#1a2332",
+    "header_fg"   : "#ffffff",
+    "main_bg"     : "#f0f2f5",
+    "card_bg"     : "#ffffff",
+    "teal"        : "#00b894",
+    "blue"        : "#0984e3",
+    "orange"      : "#e67e22",
+    "red"         : "#e74c3c",
+    "purple"      : "#6c5ce7",
+    "dark"        : "#2d3436",
+    "text"        : "#2d3436",
+    "sub"         : "#636e72",
+    "border"      : "#dfe6e9",
+    "log_bg"      : "#1e2a3a",
+    "log_fg"      : "#00ff88",
 }
 
-class DataManager:
-    def __init__(self):
-        self.stores = []
-        self.carousel = []
-        self.load_all()
+# ════════════════════════════════════════════════════════
+#  資料載入 / 儲存
+# ════════════════════════════════════════════════════════
+def load_stores():
+    """載入 stores.json，回傳 list[dict]"""
+    if not os.path.exists(STORES_F):
+        return []
+    try:
+        with open(STORES_F, "r", encoding="utf-8-sig") as f:
+            raw = json.load(f)
+        if not isinstance(raw, list):
+            print(f"[ERROR] stores.json 格式錯誤: 應為 list，實際為 {type(raw)}")
+            return []
+        result = []
+        for item in raw:
+            if isinstance(item, dict):
+                result.append(item)
+            else:
+                print(f"[WARN] 跳過非 dict 項目: {item}")
+        print(f"[OK] 載入 {len(result)} 筆門市資料")
+        return result
+    except Exception as e:
+        print(f"[ERROR] 載入 stores.json 失敗: {e}")
+        return []
 
-    def load_all(self):
-        self.load_stores()
-        self.load_carousel()
+def load_rm_config():
+    if not os.path.exists(RM_CFG_F):
+        return {}
+    try:
+        with open(RM_CFG_F, "r", encoding="utf-8-sig") as f:
+            return json.load(f)
+    except:
+        return {}
 
-    def load_stores(self):
-        try:
-            with open(STORES_FILE, "r", encoding="utf-8") as f:
-                self.stores = json.load(f).get("stores", [])
-        except Exception as e:
-            self.stores = []
+def save_rm_config(cfg):
+    os.makedirs(DATA_DIR, exist_ok=True)
+    with open(RM_CFG_F, "w", encoding="utf-8-sig") as f:
+        json.dump(cfg, f, ensure_ascii=False, indent=2)
 
-    def load_carousel(self):
-        try:
-            with open(CAROUSEL_FILE, "r", encoding="utf-8") as f:
-                self.carousel = json.load(f).get("carousel_cards", [])
-        except Exception:
-            self.carousel = []
+# ──────────────────────────────────────────────────────
+#  ★ v2.2.1 修正：load_carousel / save_carousel
+#  carousel.json 格式：{"cards": [ {...}, {...}, ... ]}
+#  load 回傳 list（cards 陣列）
+#  save 以 {"cards": [...]} 包裝寫回
+# ──────────────────────────────────────────────────────
+def load_carousel():
+    """
+    讀取 carousel.json。
+    支援兩種格式：
+      - 新格式（正確）：{"cards": [...]}   → 回傳 cards list
+      - 舊格式（相容）：[...]              → 直接回傳 list
+    任何例外皆回傳空 list。
+    """
+    if not os.path.exists(CAROUSEL_F):
+        print("[WARN] carousel.json 不存在，回傳空卡片")
+        return []
+    try:
+        with open(CAROUSEL_F, "r", encoding="utf-8-sig") as f:
+            raw = json.load(f)
 
-    def save_stores(self):
-        with open(STORES_FILE, "w", encoding="utf-8") as f:
-            json.dump({"stores": self.stores}, f, ensure_ascii=False, indent=2)
+        # 新格式：{"cards": [...]}
+        if isinstance(raw, dict):
+            cards = raw.get("cards", [])
+            if not isinstance(cards, list):
+                print(f"[ERROR] carousel.json 'cards' 不是 list: {type(cards)}")
+                return []
+            print(f"[OK] 載入 {len(cards)} 張輪播卡片（dict 格式）")
+            return cards
 
-    def save_carousel(self):
-        with open(CAROUSEL_FILE, "w", encoding="utf-8") as f:
-            json.dump({"carousel_cards": self.carousel}, f, ensure_ascii=False, indent=2)
+        # 舊格式相容：直接是 list
+        if isinstance(raw, list):
+            print(f"[OK] 載入 {len(raw)} 張輪播卡片（list 格式，舊版相容）")
+            return raw
 
-    def get_store(self, code):
-        return next((s for s in self.stores if s["store_code"] == code), None)
+        print(f"[ERROR] carousel.json 格式無法識別: {type(raw)}")
+        return []
 
-    def get_active_stores(self):
-        return [s for s in self.stores
-                if s.get("status", "").lower() == "active"
-                and s.get("channel_access_token", "").strip()]
-
-
-class LineAPIManager:
-    def __init__(self, token):
-        self.token = token
-        self.headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json"
-        }
-
-    def get_rich_menus(self):
-        r = requests.get(f"{LINE_API_BASE}/richmenu/list", headers=self.headers, timeout=15)
-        return r.json() if r.ok else {"error": r.text}
-
-    def create_rich_menu(self, menu_data):
-        r = requests.post(f"{LINE_API_BASE}/richmenu", headers=self.headers, json=menu_data, timeout=15)
-        return r.json()
-
-    def delete_rich_menu(self, rmid):
-        r = requests.delete(f"{LINE_API_BASE}/richmenu/{rmid}", headers=self.headers, timeout=15)
-        return r.status_code == 200
-
-    def upload_rich_menu_image(self, rmid, image_path):
-        url = f"https://api-data.line.me/v2/bot/richmenu/{rmid}/content"
-        headers = {"Authorization": f"Bearer {self.token}", "Content-Type": "image/png"}
-        with open(image_path, "rb") as f:
-            r = requests.post(url, headers=headers, data=f, timeout=30)
-        return r.status_code == 200
-
-    def set_default_rich_menu(self, rmid):
-        r = requests.post(f"{LINE_API_BASE}/user/all/richmenu/{rmid}", headers=self.headers, timeout=15)
-        return r.status_code == 200
-
-    def unset_default_rich_menu(self):
-        r = requests.delete(f"{LINE_API_BASE}/user/all/richmenu", headers=self.headers, timeout=15)
-        return r.status_code == 200
-
-    def build_rich_menu_object(self, store, actions):
-        cfg = configparser.ConfigParser()
-        cfg.read(CONFIG_FILE, encoding="utf-8")
-        w   = int(cfg.get("RICHMENU", "width",  fallback="2500"))
-        h   = int(cfg.get("RICHMENU", "height", fallback="1689"))
-        bys = int(cfg.get("BLOCK_LAYOUT", "block_y_start", fallback="280"))
-        bh  = int(cfg.get("BLOCK_LAYOUT", "block_height",  fallback="704"))
-
-        layout = [
-            (int(cfg.get("BLOCK_LAYOUT","block1_x",fallback="0")),    int(cfg.get("BLOCK_LAYOUT","block1_width",fallback="833")),  bys),
-            (int(cfg.get("BLOCK_LAYOUT","block2_x",fallback="833")),   int(cfg.get("BLOCK_LAYOUT","block2_width",fallback="834")),  bys),
-            (int(cfg.get("BLOCK_LAYOUT","block3_x",fallback="1667")),  int(cfg.get("BLOCK_LAYOUT","block3_width",fallback="833")),  bys),
-            (int(cfg.get("BLOCK_LAYOUT","block4_x",fallback="0")),    int(cfg.get("BLOCK_LAYOUT","block4_width",fallback="833")),  bys+bh),
-            (int(cfg.get("BLOCK_LAYOUT","block5_x",fallback="833")),   int(cfg.get("BLOCK_LAYOUT","block5_width",fallback="834")),  bys+bh),
-            (int(cfg.get("BLOCK_LAYOUT","block6_x",fallback="1667")),  int(cfg.get("BLOCK_LAYOUT","block6_width",fallback="833")),  bys+bh),
-        ]
-
-        def make_action(atype, val):
-            if atype == "postback": return {"type": "postback", "data": val, "displayText": "查看商品"}
-            if atype == "message":  return {"type": "message", "text": val}
-            return {"type": "uri", "uri": val}
-
-        areas = []
-        for i, (x, bw, y) in enumerate(layout):
-            atype, aval = actions[i] if i < len(actions) else ("uri", "https://www.wellcare.com.tw")
-            areas.append({"bounds": {"x": x, "y": y, "width": bw, "height": bh}, "action": make_action(atype, aval)})
-
-        return {
-            "size": {"width": w, "height": h},
-            "selected": True,
-            "name": f"{store['store_code']} 主選單",
-            "chatBarText": "開啟選單",
-            "areas": areas
-        }
+    except json.JSONDecodeError as e:
+        print(f"[ERROR] carousel.json JSON 解析失敗: {e}")
+        return []
+    except Exception as e:
+        print(f"[ERROR] 載入 carousel.json 失敗: {e}")
+        return []
 
 
-class CarouselBuilder:
-    @staticmethod
-    def build_carousel(cards):
-        contents = [CarouselBuilder._build_bubble(c) for c in cards if c.get("enabled", True)]
-        return {"type": "carousel", "contents": contents} if contents else None
-
-    @staticmethod
-    def _build_bubble(card):
-        atype = card.get("action_type", "uri")
-        aval  = card.get("action_value", "")
-        albl  = card.get("action_label", "了解更多")
-        if atype == "uri":
-            act = {"type": "uri", "label": albl, "uri": aval}
-        else:
-            act = {"type": "message", "label": albl, "text": aval}
-        return {
-            "type": "bubble", "size": "mega",
-            "hero": {
-                "type": "image", "url": card.get("thumbnail_image_url", ""),
-                "size": "full", "aspectRatio": "20:13", "aspectMode": "cover", "action": act
-            },
-            "body": {
-                "type": "box", "layout": "vertical", "paddingAll": "16px",
-                "contents": [
-                    {"type": "text", "text": card.get("title", ""), "weight": "bold", "size": "xl", "color": "#1A1A2E", "wrap": True},
-                    {"type": "text", "text": card.get("text", ""),  "size": "sm", "color": "#6B7280", "wrap": True, "margin": "md"}
-                ]
-            },
-            "footer": {
-                "type": "box", "layout": "vertical", "paddingAll": "12px",
-                "contents": [{"type": "button", "action": act, "style": "primary", "color": "#06C755", "height": "sm"}]
-            }
-        }
+def save_carousel(cards):
+    """
+    以 {"cards": [...]} 格式寫回 carousel.json。
+    webhook_server.py 使用 carousel_data.get("cards", []) 讀取，
+    必須保持此格式。
+    """
+    os.makedirs(DATA_DIR, exist_ok=True)
+    payload = {"cards": cards}
+    with open(CAROUSEL_F, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    print(f"[OK] carousel.json 已儲存，共 {len(cards)} 張卡片")
 
 
-class MainApp(tk.Tk):
+# ════════════════════════════════════════════════════════
+#  主應用程式
+# ════════════════════════════════════════════════════════
+class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("維康醫療用品 LINE OA 總控系統")
-        self.geometry("1400x900")
-        self.minsize(1200, 800)
-        self.configure(bg=COLORS["background"])
-        self.dm = DataManager()
-        self.log_lines = []
-        self.server_proc = None
+        self.title("維康醫療用品 LINE OA 總控管理系統")
+        self.geometry("1400x820")
+        self.configure(bg=C["header_bg"])
+        self.minsize(1100, 650)
+
+        # 載入資料
+        self.stores     = load_stores()
+        self.rm_config  = load_rm_config()
+        self.carousel   = load_carousel()   # ← 現在保證是 list
+        self._cur_card_idx = 0
+        self.cur_page   = None
+        self.sel_store  = None
+
         self._build_ui()
-        self.protocol("WM_DELETE_WINDOW", self._on_close)
-
-    def _build_ui(self):
-        self._build_header()
-        main = tk.Frame(self, bg=COLORS["background"])
-        main.pack(fill="both", expand=True)
-        self._build_sidebar(main)
-        self.content_frame = tk.Frame(main, bg=COLORS["background"])
-        self.content_frame.pack(side="left", fill="both", expand=True)
-        self._build_notebook()
-        self._build_statusbar()
-
-    def _build_header(self):
-        hdr = tk.Frame(self, bg=COLORS["header_bg"], height=70)
-        hdr.pack(fill="x")
-        hdr.pack_propagate(False)
-        lf = tk.Frame(hdr, bg=COLORS["header_bg"])
-        lf.pack(side="left", padx=20, pady=10)
-        tk.Label(lf, text="💊", font=("Arial", 28), bg=COLORS["header_bg"], fg="white").pack(side="left")
-        tf = tk.Frame(lf, bg=COLORS["header_bg"])
-        tf.pack(side="left", padx=10)
-        tk.Label(tf, text="維康醫療用品", font=("Microsoft JhengHei", 16, "bold"), bg=COLORS["header_bg"], fg="white").pack(anchor="w")
-        tk.Label(tf, text="LINE OA 總控管理系統", font=("Microsoft JhengHei", 10), bg=COLORS["header_bg"], fg="#A0AEC0").pack(anchor="w")
-        rf = tk.Frame(hdr, bg=COLORS["header_bg"])
-        rf.pack(side="right", padx=20)
-        self.clock_lbl = tk.Label(rf, text="", font=("Arial", 11), bg=COLORS["header_bg"], fg="#A0AEC0")
-        self.clock_lbl.pack()
+        self._nav_to("overview")
         self._tick()
 
-    def _tick(self):
-        self.clock_lbl.config(text=datetime.now().strftime("🕐 %Y-%m-%d %H:%M:%S"))
-        self.after(1000, self._tick)
+    # ── UI 骨架 ─────────────────────────────────────────
+    def _build_ui(self):
+        hdr = tk.Frame(self, bg=C["header_bg"], height=55)
+        hdr.pack(fill="x", side="top")
+        hdr.pack_propagate(False)
+        tk.Label(hdr, text="維康醫療用品", font=("微軟正黑體",16,"bold"),
+                 bg=C["header_bg"], fg="white").pack(side="left", padx=20, pady=12)
+        tk.Label(hdr, text="LINE OA 總控管理系統", font=("微軟正黑體",12),
+                 bg=C["header_bg"], fg=C["teal"]).pack(side="left", pady=12)
+        self.lbl_time = tk.Label(hdr, text="", font=("Consolas",11),
+                                 bg=C["header_bg"], fg="#aaaaaa")
+        self.lbl_time.pack(side="right", padx=20)
+
+        body = tk.Frame(self, bg=C["main_bg"])
+        body.pack(fill="both", expand=True)
+
+        self._build_sidebar(body)
+
+        self.content = tk.Frame(body, bg=C["main_bg"])
+        self.content.pack(side="left", fill="both", expand=True)
 
     def _build_sidebar(self, parent):
-        sb = tk.Frame(parent, bg=COLORS["sidebar_bg"], width=200)
+        sb = tk.Frame(parent, bg=C["sidebar_bg"], width=120)
         sb.pack(side="left", fill="y")
         sb.pack_propagate(False)
-        tk.Label(sb, text="功能選單", font=("Microsoft JhengHei", 11, "bold"),
-                 bg=COLORS["sidebar_bg"], fg="#A0AEC0", pady=15).pack(fill="x")
-        items = [
-            ("📊", "門市總覽",       0),
-            ("🎨", "Rich Menu 管理", 1),
-            ("🎠", "輪播卡片設定",   2),
-            ("📡", "Webhook 設定",   3),
-            ("📝", "操作日誌",       4),
+
+        nav_items = [
+            ("功能選單","menu"),
+            ("門市總覽","overview"),
+            ("Rich Menu","richmenu"),
+            ("輪播卡片","carousel"),
+            ("Webhook","webhook"),
+            ("操作日誌","log"),
         ]
-        self.sb_btns = []
-        for icon, label, idx in items:
-            b = tk.Button(sb, text=f"  {icon}  {label}",
-                          font=("Microsoft JhengHei", 10),
-                          bg=COLORS["sidebar_bg"], fg="white",
-                          activebackground=COLORS["primary"], activeforeground="white",
-                          relief="flat", bd=0, pady=12, anchor="w",
-                          command=lambda i=idx: self._switch_tab(i))
-            b.pack(fill="x", padx=5, pady=2)
-            self.sb_btns.append(b)
-        tk.Label(sb, text="v1.0.0", font=("Arial", 9),
-                 bg=COLORS["sidebar_bg"], fg="#4A5568").pack(side="bottom", pady=10)
+        icons = {"menu":"☰","overview":"🏪","richmenu":"▦",
+                 "carousel":"🎠","webhook":"🔗","log":"📋"}
+        self.sb_btns = {}
+        for name, key in nav_items:
+            f = tk.Frame(sb, bg=C["sidebar_bg"], cursor="hand2")
+            f.pack(fill="x")
+            lbl = tk.Label(f, text=f"{icons.get(key,'')} {name}",
+                           font=("微軟正黑體",10), bg=C["sidebar_bg"],
+                           fg=C["sidebar_fg"], pady=14, padx=10,
+                           justify="center", anchor="w")
+            lbl.pack(fill="x")
+            for w in (f, lbl):
+                w.bind("<Button-1>", lambda e, k=key: self._nav_to(k))
+                w.bind("<Enter>",    lambda e, w=lbl: w.config(fg="white"))
+                w.bind("<Leave>",    lambda e, w=lbl, k=key:
+                       w.config(fg="white" if self.cur_page==k else C["sidebar_fg"]))
+            self.sb_btns[key] = (f, lbl)
 
-    def _switch_tab(self, idx):
-        self.notebook.select(idx)
-        for i, b in enumerate(self.sb_btns):
-            b.config(bg=COLORS["primary"] if i == idx else COLORS["sidebar_bg"])
+        # ★ v2.2.1 版本號
+        tk.Label(sb, text="v2.3.0", font=("Consolas",8),
+                 bg=C["sidebar_bg"], fg="#555").pack(side="bottom", pady=6)
 
-    def _build_notebook(self):
-        s = ttk.Style()
-        s.theme_use("clam")
-        s.configure("TNotebook", background=COLORS["background"], borderwidth=0)
-        s.configure("TNotebook.Tab", font=("Microsoft JhengHei", 10), padding=[15, 8])
-        self.notebook = ttk.Notebook(self.content_frame)
-        self.notebook.pack(fill="both", expand=True, padx=10, pady=10)
-        self.tab_overview = tk.Frame(self.notebook, bg=COLORS["background"])
-        self.tab_richmenu = tk.Frame(self.notebook, bg=COLORS["background"])
-        self.tab_carousel = tk.Frame(self.notebook, bg=COLORS["background"])
-        self.tab_webhook  = tk.Frame(self.notebook, bg=COLORS["background"])
-        self.tab_log      = tk.Frame(self.notebook, bg=COLORS["background"])
-        self.notebook.add(self.tab_overview, text="📊 門市總覽")
-        self.notebook.add(self.tab_richmenu, text="🎨 Rich Menu 管理")
-        self.notebook.add(self.tab_carousel, text="🎠 輪播卡片設定")
-        self.notebook.add(self.tab_webhook,  text="📡 Webhook 設定")
-        self.notebook.add(self.tab_log,      text="📝 操作日誌")
-        self._build_overview_tab()
-        self._build_richmenu_tab()
-        self._build_carousel_tab()
-        self._build_webhook_tab()
-        self._build_log_tab()
+    def _nav_to(self, key):
+        self.cur_page = key
+        for k,(f,lbl) in self.sb_btns.items():
+            if k == key:
+                f.config(bg=C["sidebar_sel"])
+                lbl.config(bg=C["sidebar_sel"], fg="white")
+            else:
+                f.config(bg=C["sidebar_bg"])
+                lbl.config(bg=C["sidebar_bg"], fg=C["sidebar_fg"])
+        for w in self.content.winfo_children():
+            w.destroy()
+        pages = {
+            "menu"     : self._page_menu,
+            "overview" : self._page_overview,
+            "richmenu" : self._page_richmenu,
+            "carousel" : self._page_carousel,
+            "webhook"  : self._page_webhook,
+            "log"      : self._page_log,
+        }
+        pages.get(key, self._page_overview)()
 
-    def _build_statusbar(self):
-        sb = tk.Frame(self, bg=COLORS["header_bg"], height=30)
-        sb.pack(fill="x", side="bottom")
-        sb.pack_propagate(False)
-        self.status_var = tk.StringVar(value="✅ 系統就緒")
-        tk.Label(sb, textvariable=self.status_var,
-                 font=("Microsoft JhengHei", 9),
-                 bg=COLORS["header_bg"], fg="#A0AEC0",
-                 anchor="w", padx=15).pack(fill="x", pady=5)
+    def _tick(self):
+        self.lbl_time.config(text=datetime.now().strftime("%Y-%m-%d  %H:%M:%S"))
+        self.after(1000, self._tick)
 
-    def set_status(self, msg):
-        self.status_var.set(msg)
-        self.log(msg)
+    # ════════════════════════════════════════════════════
+    #  頁面：功能選單
+    # ════════════════════════════════════════════════════
+    def _page_menu(self):
+        f = tk.Frame(self.content, bg=C["main_bg"])
+        f.pack(fill="both", expand=True, padx=30, pady=30)
+        tk.Label(f, text="功能選單", font=("微軟正黑體",18,"bold"),
+                 bg=C["main_bg"], fg=C["text"]).pack(anchor="w", pady=(0,20))
+        btns = [
+            ("🏪  門市總覽",       C["teal"],   "overview"),
+            ("▦   Rich Menu 管理", C["blue"],   "richmenu"),
+            ("🎠  輪播卡片設定",   C["purple"], "carousel"),
+            ("🔗  Webhook 設定",   C["orange"], "webhook"),
+            ("📋  操作日誌",       C["dark"],   "log"),
+        ]
+        for txt, col, key in btns:
+            tk.Button(f, text=txt, font=("微軟正黑體",13),
+                      bg=col, fg="white", relief="flat",
+                      activebackground=col, cursor="hand2",
+                      width=28, pady=10,
+                      command=lambda k=key: self._nav_to(k)
+                      ).pack(pady=6, anchor="w")
 
-    def log(self, msg):
-        ts = datetime.now().strftime("%H:%M:%S")
-        line = f"[{ts}] {msg}"
-        self.log_lines.append(line)
-        try:
-            self.log_text.config(state="normal")
-            self.log_text.insert("end", line + "\n")
-            self.log_text.see("end")
-            self.log_text.config(state="disabled")
-        except Exception:
-            pass
-        try:
-            with open(os.path.join(LOGS_DIR, "app.log"), "a", encoding="utf-8") as f:
-                f.write(line + "\n")
-        except Exception:
-            pass
+    # ════════════════════════════════════════════════════
+    #  頁面：門市總覽
+    # ════════════════════════════════════════════════════
+    def _page_overview(self):
+        f = tk.Frame(self.content, bg=C["main_bg"])
+        f.pack(fill="both", expand=True, padx=30, pady=20)
 
-    # ── Tab 0: 門市總覽 ──
-    def _build_overview_tab(self):
-        fr = self.tab_overview
-        top = tk.Frame(fr, bg=COLORS["background"])
-        top.pack(fill="x", padx=15, pady=10)
-        tk.Label(top, text="📊 門市總覽",
-                 font=("Microsoft JhengHei", 16, "bold"),
-                 bg=COLORS["background"], fg=COLORS["text_dark"]).pack(side="left")
-        tk.Button(top, text="🔄 重新整理",
-                  command=self._refresh_overview,
-                  bg=COLORS["primary"], fg="white",
-                  font=("Microsoft JhengHei", 10),
-                  relief="flat", padx=15, pady=5, cursor="hand2").pack(side="right")
-        stats = tk.Frame(fr, bg=COLORS["background"])
-        stats.pack(fill="x", padx=15, pady=5)
-        active = len(self.dm.get_active_stores())
-        total  = len(self.dm.stores)
-        self._stat_card(stats, "🏪 總門市數",  str(total),         COLORS["primary"])
-        self._stat_card(stats, "✅ 已設定 OA", str(active),        COLORS["success"])
-        self._stat_card(stats, "⚠️ 待設定",   str(total - active), COLORS["warning"])
-        cols = ("store_code", "store_name", "status", "rich_menu_id", "token_status")
-        self.tree_overview = ttk.Treeview(fr, columns=cols, show="headings", height=20)
-        hdrs   = {"store_code":"門市代碼","store_name":"門市名稱","status":"狀態","rich_menu_id":"Rich Menu ID","token_status":"Token 狀態"}
-        widths = {"store_code":80,"store_name":280,"status":70,"rich_menu_id":320,"token_status":100}
+        tk.Label(f, text="門市總覽", font=("微軟正黑體",18,"bold"),
+                 bg=C["main_bg"], fg=C["text"]).pack(anchor="w", pady=(0,10))
+
+        cols = ("代碼","名稱","Channel ID","Rich Menu ID","狀態")
+        tree_frame = tk.Frame(f, bg=C["main_bg"])
+        tree_frame.pack(fill="both", expand=True)
+
+        vsb = ttk.Scrollbar(tree_frame, orient="vertical")
+        hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
+        vsb.pack(side="right", fill="y")
+        hsb.pack(side="bottom", fill="x")
+
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("Treeview",
+                        background=C["card_bg"],
+                        foreground=C["text"],
+                        rowheight=26,
+                        fieldbackground=C["card_bg"],
+                        font=("微軟正黑體",10))
+        style.configure("Treeview.Heading",
+                        background=C["teal"],
+                        foreground="white",
+                        font=("微軟正黑體",10,"bold"))
+        style.map("Treeview", background=[("selected","#b2dfdb")])
+
+        tree = ttk.Treeview(tree_frame, columns=cols, show="headings",
+                            yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+        vsb.config(command=tree.yview)
+        hsb.config(command=tree.xview)
+
+        widths = {"代碼":60,"名稱":230,"Channel ID":180,"Rich Menu ID":260,"狀態":70}
         for c in cols:
-            self.tree_overview.heading(c, text=hdrs[c])
-            self.tree_overview.column(c, width=widths[c], anchor="center")
-        ys = ttk.Scrollbar(fr, orient="vertical", command=self.tree_overview.yview)
-        self.tree_overview.configure(yscrollcommand=ys.set)
-        self.tree_overview.pack(fill="both", expand=True, padx=15, pady=5)
-        ys.pack(side="right", fill="y")
-        self._refresh_overview()
+            tree.heading(c, text=c)
+            tree.column(c, width=widths.get(c,120), anchor="w")
 
-    def _stat_card(self, parent, title, value, color):
-        card = tk.Frame(parent, bg=COLORS["card_bg"], relief="flat", bd=1)
-        card.pack(side="left", padx=5, pady=5, ipadx=20, ipady=10)
-        tk.Label(card, text=value, font=("Arial", 28, "bold"),
-                 bg=COLORS["card_bg"], fg=color).pack()
-        tk.Label(card, text=title, font=("Microsoft JhengHei", 10),
-                 bg=COLORS["card_bg"], fg=COLORS["text_light"]).pack()
+        tree.pack(fill="both", expand=True)
 
-    def _refresh_overview(self):
-        self.dm.load_stores()
-        for row in self.tree_overview.get_children():
-            self.tree_overview.delete(row)
-        for s in self.dm.stores:
-            tok  = "✅ 已設定" if s.get("channel_access_token", "").strip() else "❌ 未設定"
-            rmid = s.get("rich_menu_id", "") or "—"
-            tag  = "active" if s.get("channel_access_token", "").strip() else "inactive"
-            self.tree_overview.insert("", "end",
-                values=(s["store_code"], s["store_name"], s.get("status", "active"), rmid, tok),
-                tags=(tag,))
-        self.tree_overview.tag_configure("active",   background="#F0FFF4")
-        self.tree_overview.tag_configure("inactive", background="#FFF5F5")
-        self.set_status(f"✅ 已載入 {len(self.dm.stores)} 個門市資料")
+        print(f"[DEBUG] _page_overview: stores 筆數 = {len(self.stores)}")
+        for s in self.stores:
+            print(f"[DEBUG]   store = {s}")
+            tree.insert("", "end", values=(
+                s.get("id",""),
+                s.get("name",""),
+                s.get("channel_id", s.get("channel_access_token","")[:20]+"..."
+                      if s.get("channel_access_token","") else ""),
+                s.get("rich_menu_id",""),
+                s.get("status",""),
+            ))
 
-    # ── Tab 1: Rich Menu 管理 ──
-    def _build_richmenu_tab(self):
-        fr = self.tab_richmenu
-        top = tk.Frame(fr, bg=COLORS["background"])
-        top.pack(fill="x", padx=15, pady=10)
-        tk.Label(top, text="🎨 Rich Menu 管理",
-                 font=("Microsoft JhengHei", 16, "bold"),
-                 bg=COLORS["background"], fg=COLORS["text_dark"]).pack(side="left")
+        stat = tk.Frame(f, bg=C["main_bg"])
+        stat.pack(fill="x", pady=(8,0))
+        total  = len(self.stores)
+        active = sum(1 for s in self.stores if s.get("status","").lower()=="active")
+        tk.Label(stat,
+                 text=f"共 {total} 間門市　|　已啟用: {active}　|　未啟用: {total-active}",
+                 font=("微軟正黑體",10), bg=C["main_bg"], fg=C["sub"]).pack(anchor="w")
 
-        sel_fr = tk.LabelFrame(fr, text="門市選擇", font=("Microsoft JhengHei", 10),
-                                bg=COLORS["background"], padx=10, pady=8)
-        sel_fr.pack(fill="x", padx=15, pady=5)
-        tk.Label(sel_fr, text="選擇門市:", bg=COLORS["background"],
-                 font=("Microsoft JhengHei", 10)).grid(row=0, column=0, sticky="w")
-        self.store_var = tk.StringVar()
-        self.store_combo = ttk.Combobox(sel_fr, textvariable=self.store_var,
-                                         values=[s["store_code"] for s in self.dm.stores],
-                                         width=15, state="readonly")
-        self.store_combo.grid(row=0, column=1, padx=5)
-        self.store_combo.bind("<<ComboboxSelected>>", self._on_store_select)
-        self.store_info_lbl = tk.Label(sel_fr, text="", bg=COLORS["background"],
-                                        font=("Microsoft JhengHei", 9), fg=COLORS["text_light"])
-        self.store_info_lbl.grid(row=0, column=2, padx=15, sticky="w")
+    # ════════════════════════════════════════════════════
+    #  頁面：Rich Menu  ← 完全未動，與 v2.2.0 一致
+    # ════════════════════════════════════════════════════
+    def _page_richmenu(self):
+        outer = tk.Frame(self.content, bg=C["main_bg"])
+        outer.pack(fill="both", expand=True)
 
-        img_fr = tk.LabelFrame(fr, text="Rich Menu 圖片", font=("Microsoft JhengHei", 10),
-                                 bg=COLORS["background"], padx=10, pady=8)
-        img_fr.pack(fill="x", padx=15, pady=5)
-        self.img_path_var = tk.StringVar(value="assets/richmenu.png")
-        tk.Entry(img_fr, textvariable=self.img_path_var, width=50, font=("Arial", 10)).grid(row=0, column=0, padx=5)
-        tk.Button(img_fr, text="📁 瀏覽", command=self._browse_image,
-                  bg=COLORS["secondary"], fg="white", font=("Microsoft JhengHei", 9),
-                  relief="flat", padx=10, cursor="hand2").grid(row=0, column=1, padx=5)
+        left = tk.LabelFrame(outer, text="門市選擇", bg=C["main_bg"],
+                              font=("微軟正黑體",10,"bold"), fg=C["text"],
+                              padx=6, pady=6)
+        left.pack(side="left", fill="y", padx=(16,0), pady=16)
 
-        action_fr = tk.LabelFrame(fr, text="區塊動作設定 (6個區塊)",
-                                   font=("Microsoft JhengHei", 10),
-                                   bg=COLORS["background"], padx=10, pady=8)
-        action_fr.pack(fill="x", padx=15, pady=5)
-        self.block_vars = []
-        block_defaults = [
-            ("postback", "action=show_carousel"),
-            ("uri",      "https://www.wellcare.com.tw"),
-            ("uri",      "https://www.wellcare.com.tw"),
-            ("uri",      "https://www.wellcare.com.tw"),
-            ("uri",      "https://www.wellcare.com.tw"),
-            ("uri",      "https://line.me/R/pay"),
+        btn_row = tk.Frame(left, bg=C["main_bg"])
+        btn_row.pack(fill="x", pady=(0,4))
+        tk.Button(btn_row, text="☑ 全選", font=("微軟正黑體",9),
+                  bg=C["teal"], fg="white", relief="flat", cursor="hand2",
+                  command=lambda: self._rm_select_all(lb, True)
+                  ).pack(side="left", padx=2)
+        tk.Button(btn_row, text="☐ 取消", font=("微軟正黑體",9),
+                  bg=C["sub"], fg="white", relief="flat", cursor="hand2",
+                  command=lambda: self._rm_select_all(lb, False)
+                  ).pack(side="left", padx=2)
+
+        lb = tk.Listbox(left, selectmode="extended", width=28, height=25,
+                        font=("微軟正黑體",10), bg=C["card_bg"],
+                        selectbackground=C["teal"], selectforeground="white",
+                        activestyle="none", relief="flat", borderwidth=1,
+                        highlightthickness=1, highlightcolor=C["border"])
+        lb.pack(fill="both", expand=True)
+
+        for s in self.stores:
+            lb.insert("end", f"{s.get('id','')}  {s.get('name','')[:14]}")
+
+        lb.bind("<<ListboxSelect>>", lambda e: self._rm_load_store(lb))
+
+        right = tk.LabelFrame(outer, text="Rich Menu 設定", bg=C["main_bg"],
+                               font=("微軟正黑體",10,"bold"), fg=C["text"],
+                               padx=10, pady=10)
+        right.pack(side="left", fill="both", expand=True, padx=16, pady=16)
+
+        self.rm_hint = tk.Label(right, text="🔥 請點左側門市名稱載入設定",
+                                font=("微軟正黑體",11), bg=C["main_bg"],
+                                fg=C["orange"])
+        self.rm_hint.pack(anchor="w", pady=(0,8))
+
+        img_row = tk.Frame(right, bg=C["main_bg"])
+        img_row.pack(fill="x", pady=4)
+        tk.Label(img_row, text="選單圖片路徑：", font=("微軟正黑體",10),
+                 bg=C["main_bg"], fg=C["text"]).pack(side="left")
+        self.rm_img_var = tk.StringVar(value="assets/richmenu.png")
+        tk.Entry(img_row, textvariable=self.rm_img_var, width=40,
+                 font=("微軟正黑體",10)).pack(side="left", padx=4)
+        tk.Button(img_row, text="瀏覽", font=("微軟正黑體",9),
+                  bg=C["sub"], fg="white", relief="flat", cursor="hand2",
+                  command=self._rm_browse_img).pack(side="left")
+
+        blk_frame = tk.LabelFrame(right,
+                                   text="區塊動作設定（B1 = 輪播觸發，固定不可改）",
+                                   bg=C["main_bg"], font=("微軟正黑體",9), fg=C["sub"])
+        blk_frame.pack(fill="x", pady=8)
+
+        self.rm_type_vars   = {}
+        self.rm_action_vars = {}
+        for i in range(2, 7):
+            row = tk.Frame(blk_frame, bg=C["main_bg"])
+            row.pack(fill="x", pady=2)
+            tk.Label(row, text=f"B{i} 類型：", font=("微軟正黑體",10),
+                     bg=C["main_bg"], fg=C["text"], width=8).pack(side="left")
+            t_var = tk.StringVar(value="uri")
+            self.rm_type_vars[i] = t_var
+            ttk.Combobox(row, textvariable=t_var,
+                         values=["uri","message","postback"],
+                         width=10, state="readonly").pack(side="left")
+            a_var = tk.StringVar()
+            self.rm_action_vars[i] = a_var
+            tk.Entry(row, textvariable=a_var, width=55,
+                     font=("微軟正黑體",10)).pack(side="left", padx=4)
+            tk.Label(row, text="填入 https://... 或文字",
+                     font=("微軟正黑體",8), bg=C["main_bg"],
+                     fg=C["sub"]).pack(side="left")
+
+        btn_area = tk.Frame(right, bg=C["main_bg"])
+        btn_area.pack(fill="x", pady=10)
+        actions = [
+            ("🔍 查詢選單", C["dark"],   self._rm_query),
+            ("＋ 建立選單", C["teal"],   self._rm_create),
+            ("⬆ 上傳圖片", C["blue"],   self._rm_upload_img),
+            ("★ 設為預設", C["purple"], self._rm_set_default),
+            ("🗑 刪除選單", C["red"],    self._rm_delete),
+            ("⚡ 一鍵部署", C["orange"], self._rm_deploy_all),
+            ("💾 儲存設定", C["teal"],   self._rm_save_cfg),
         ]
-        for i, (atype, aval) in enumerate(block_defaults):
-            row = i // 2
-            col_base = (i % 2) * 3
-            tk.Label(action_fr, text=f"B{i+1} 類型:",
-                     bg=COLORS["background"], font=("Microsoft JhengHei", 9)
-                     ).grid(row=row, column=col_base, sticky="w", padx=5, pady=3)
-            t_var = tk.StringVar(value=atype)
-            ttk.Combobox(action_fr, textvariable=t_var,
-                         values=["uri", "message", "postback"],
-                         width=9, state="readonly").grid(row=row, column=col_base+1, padx=3)
-            v_var = tk.StringVar(value=aval)
-            tk.Entry(action_fr, textvariable=v_var, width=38,
-                     font=("Arial", 9)).grid(row=row, column=col_base+2, padx=3)
-            self.block_vars.append((t_var, v_var))
+        for txt, col, cmd in actions:
+            tk.Button(btn_area, text=txt, font=("微軟正黑體",9),
+                      bg=col, fg="white", relief="flat", cursor="hand2",
+                      padx=8, pady=6,
+                      command=cmd).pack(side="left", padx=3)
 
-        btn_fr = tk.Frame(fr, bg=COLORS["background"])
-        btn_fr.pack(fill="x", padx=15, pady=10)
-        for txt, cmd, clr in [
-            ("📋 查詢選單",   self._query_rich_menus,  COLORS["secondary"]),
-            ("✨ 建立選單",   self._create_rich_menu,  COLORS["primary"]),
-            ("🖼️ 上傳圖片",  self._upload_image,      "#7C3AED"),
-            ("⭐ 設為預設",  self._set_default_menu,  COLORS["success"]),
-            ("🗑️ 刪除選單",  self._delete_rich_menu,  COLORS["error"]),
-            ("🚀 一鍵部署",  self._one_click_deploy,  COLORS["accent"]),
-        ]:
-            tk.Button(btn_fr, text=txt, command=cmd,
-                      bg=clr, fg="white", font=("Microsoft JhengHei", 10),
-                      relief="flat", padx=12, pady=8, cursor="hand2").pack(side="left", padx=5)
+        res_frame = tk.LabelFrame(right, text="執行結果",
+                                   bg=C["main_bg"], font=("微軟正黑體",9))
+        res_frame.pack(fill="both", expand=True, pady=(6,0))
+        self.rm_log = tk.Text(res_frame, height=8, bg=C["log_bg"],
+                              fg=C["log_fg"], font=("Consolas",9),
+                              relief="flat", state="disabled")
+        self.rm_log.pack(fill="both", expand=True, padx=4, pady=4)
 
-        res_fr = tk.LabelFrame(fr, text="執行結果", font=("Microsoft JhengHei", 10),
-                                bg=COLORS["background"], padx=5, pady=5)
-        res_fr.pack(fill="both", expand=True, padx=15, pady=5)
-        self.rm_result = scrolledtext.ScrolledText(res_fr, height=8, state="disabled",
-                                                    font=("Consolas", 9), bg="#1E1E2E", fg="#A0AEC0")
-        self.rm_result.pack(fill="both", expand=True)
+        self._rm_lb_ref = lb
 
-    def _on_store_select(self, event=None):
-        code  = self.store_var.get()
-        store = self.dm.get_store(code)
-        if store:
-            rmid = store.get("rich_menu_id", "") or "未設定"
-            self.store_info_lbl.config(text=f"Rich Menu: {rmid}")
-
-    def _browse_image(self):
-        path = filedialog.askopenfilename(filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
-        if path:
-            self.img_path_var.set(path)
-
-    def _get_api(self):
-        code = self.store_var.get()
-        if not code:
-            messagebox.showwarning("提示", "請先選擇門市")
-            return None, None
-        store = self.dm.get_store(code)
-        tok   = store.get("channel_access_token", "").strip() if store else ""
-        if not tok:
-            messagebox.showerror("錯誤", f"{code} 尚未設定 Channel Access Token")
-            return None, None
-        return LineAPIManager(tok), store
-
-    def _show_result(self, text):
-        self.rm_result.config(state="normal")
-        self.rm_result.insert("end", f"[{datetime.now():%H:%M:%S}] {text}\n")
-        self.rm_result.see("end")
-        self.rm_result.config(state="disabled")
-
-    def _query_rich_menus(self):
-        api, store = self._get_api()
-        if not api: return
-        def task():
-            res   = api.get_rich_menus()
-            menus = res.get("richmenus", [])
-            self._show_result(f"共 {len(menus)} 個 Rich Menu:")
-            for m in menus:
-                self._show_result(f"  ID:{m.get('richMenuId','')}  名稱:{m.get('name','')}")
-            self.set_status(f"✅ {store['store_code']} 查詢完成")
-        threading.Thread(target=task, daemon=True).start()
-
-    def _create_rich_menu(self):
-        api, store = self._get_api()
-        if not api: return
-        actions  = [(t.get(), v.get()) for t, v in self.block_vars]
-        menu_obj = api.build_rich_menu_object(store, actions)
-        def task():
-            res  = api.create_rich_menu(menu_obj)
-            rmid = res.get("richMenuId", "")
-            if rmid:
-                store["rich_menu_id"] = rmid
-                self.dm.save_stores()
-                self._show_result(f"✅ 建立成功: {rmid}")
-                self.set_status(f"✅ {store['store_code']} Rich Menu 建立完成")
-                self.store_info_lbl.config(text=f"Rich Menu: {rmid}")
-            else:
-                self._show_result(f"❌ 建立失敗: {res}")
-        threading.Thread(target=task, daemon=True).start()
-
-    def _upload_image(self):
-        api, store = self._get_api()
-        if not api: return
-        img  = self.img_path_var.get()
-        rmid = store.get("rich_menu_id", "")
-        if not os.path.exists(img):
-            messagebox.showerror("錯誤", f"圖片不存在: {img}"); return
-        if not rmid:
-            messagebox.showwarning("提示", "請先建立 Rich Menu"); return
-        def task():
-            ok  = api.upload_rich_menu_image(rmid, img)
-            msg = "✅ 圖片上傳成功" if ok else "❌ 圖片上傳失敗"
-            self._show_result(msg); self.set_status(msg)
-        threading.Thread(target=task, daemon=True).start()
-
-    def _set_default_menu(self):
-        api, store = self._get_api()
-        if not api: return
-        rmid = store.get("rich_menu_id", "")
-        if not rmid:
-            messagebox.showwarning("提示", "請先建立 Rich Menu"); return
-        def task():
-            ok  = api.set_default_rich_menu(rmid)
-            msg = f"✅ 已設為預設: {rmid}" if ok else "❌ 設定失敗"
-            self._show_result(msg); self.set_status(msg)
-        threading.Thread(target=task, daemon=True).start()
-
-    def _delete_rich_menu(self):
-        api, store = self._get_api()
-        if not api: return
-        rmid = store.get("rich_menu_id", "")
-        if not rmid:
-            messagebox.showwarning("提示", "無 Rich Menu ID"); return
-        if not messagebox.askyesno("確認刪除", f"確定刪除\n{rmid}？"): return
-        def task():
-            ok = api.delete_rich_menu(rmid)
-            if ok:
-                store["rich_menu_id"] = ""
-                self.dm.save_stores()
-                self._show_result(f"✅ 已刪除: {rmid}")
-            else:
-                self._show_result(f"❌ 刪除失敗")
-        threading.Thread(target=task, daemon=True).start()
-
-    def _one_click_deploy(self):
-        api, store = self._get_api()
-        if not api: return
-        img      = self.img_path_var.get()
-        has_img  = os.path.exists(img)
-        actions  = [(t.get(), v.get()) for t, v in self.block_vars]
-        menu_obj = api.build_rich_menu_object(store, actions)
-        def task():
-            self._show_result("🚀 開始一鍵部署...")
-            res  = api.create_rich_menu(menu_obj)
-            rmid = res.get("richMenuId", "")
-            if not rmid:
-                self._show_result(f"❌ 建立失敗: {res}"); return
-            self._show_result(f"  ✅ 建立: {rmid}")
-            store["rich_menu_id"] = rmid
-            self.dm.save_stores()
-            if has_img:
-                ok = api.upload_rich_menu_image(rmid, img)
-                self._show_result(f"  {'✅' if ok else '❌'} 圖片上傳")
-            ok = api.set_default_rich_menu(rmid)
-            self._show_result(f"  {'✅' if ok else '❌'} 設為預設")
-            self._show_result("🎉 部署完成！")
-            self.set_status(f"✅ {store['store_code']} 一鍵部署完成")
-        threading.Thread(target=task, daemon=True).start()
-
-    # ── Tab 2: 輪播卡片設定 ──
-    def _build_carousel_tab(self):
-        fr = self.tab_carousel
-        top = tk.Frame(fr, bg=COLORS["background"])
-        top.pack(fill="x", padx=15, pady=10)
-        tk.Label(top, text="🎠 輪播卡片設定",
-                 font=("Microsoft JhengHei", 16, "bold"),
-                 bg=COLORS["background"], fg=COLORS["text_dark"]).pack(side="left")
-        btn_row = tk.Frame(top, bg=COLORS["background"])
-        btn_row.pack(side="right")
-        tk.Button(btn_row, text="💾 儲存設定", command=self._save_carousel,
-                  bg=COLORS["primary"], fg="white", font=("Microsoft JhengHei", 10),
-                  relief="flat", padx=12, pady=5, cursor="hand2").pack(side="left", padx=3)
-        tk.Button(btn_row, text="👁️ 預覽 JSON", command=self._preview_carousel_json,
-                  bg=COLORS["secondary"], fg="white", font=("Microsoft JhengHei", 10),
-                  relief="flat", padx=12, pady=5, cursor="hand2").pack(side="left", padx=3)
-
-        canvas = tk.Canvas(fr, bg=COLORS["background"], highlightthickness=0)
-        ys = ttk.Scrollbar(fr, orient="vertical", command=canvas.yview)
-        canvas.configure(yscrollcommand=ys.set)
-        ys.pack(side="right", fill="y")
-        canvas.pack(fill="both", expand=True, padx=15)
-        inner = tk.Frame(canvas, bg=COLORS["background"])
-        canvas.create_window((0, 0), window=inner, anchor="nw")
-        inner.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-
-        self.card_widgets = []
-        for i, card in enumerate(self.dm.carousel):
-            self._build_card_editor(inner, i, card)
-
-    def _build_card_editor(self, parent, idx, card):
-        cf = tk.LabelFrame(parent, text=f"卡片 {idx+1}: {card.get('title', '')}",
-                            font=("Microsoft JhengHei", 10, "bold"),
-                            bg=COLORS["background"], padx=10, pady=8)
-        cf.pack(fill="x", padx=5, pady=5)
-        fields = [
-            ("標題",     "title",               50),
-            ("說明",     "text",                50),
-            ("圖片 URL", "thumbnail_image_url", 70),
-            ("按鈕文字", "action_label",        30),
-            ("動作值",   "action_value",        70),
-        ]
-        vars_dict = {}
-        for row, (lbl, key, w) in enumerate(fields):
-            tk.Label(cf, text=lbl + ":", bg=COLORS["background"],
-                     font=("Microsoft JhengHei", 9), width=10, anchor="e"
-                     ).grid(row=row, column=0, sticky="e", pady=2)
-            var = tk.StringVar(value=str(card.get(key, "")))
-            tk.Entry(cf, textvariable=var, width=w, font=("Arial", 9)
-                     ).grid(row=row, column=1, sticky="w", padx=5)
-            vars_dict[key] = var
-        tk.Label(cf, text="動作類型:", bg=COLORS["background"],
-                 font=("Microsoft JhengHei", 9), width=10, anchor="e"
-                 ).grid(row=len(fields), column=0, sticky="e", pady=2)
-        at_var = tk.StringVar(value=card.get("action_type", "uri"))
-        ttk.Combobox(cf, textvariable=at_var, values=["uri", "message"],
-                     width=12, state="readonly").grid(row=len(fields), column=1, sticky="w", padx=5)
-        vars_dict["action_type"] = at_var
-        en_var = tk.BooleanVar(value=card.get("enabled", True))
-        tk.Checkbutton(cf, text="啟用此卡片", variable=en_var,
-                       bg=COLORS["background"], font=("Microsoft JhengHei", 9)
-                       ).grid(row=len(fields)+1, column=1, sticky="w", pady=3)
-        vars_dict["enabled"] = en_var
-        self.card_widgets.append((idx, vars_dict))
-
-    def _save_carousel(self):
-        for idx, vd in self.card_widgets:
-            if idx < len(self.dm.carousel):
-                c = self.dm.carousel[idx]
-                c["title"]               = vd["title"].get()
-                c["text"]                = vd["text"].get()
-                c["thumbnail_image_url"] = vd["thumbnail_image_url"].get()
-                c["action_label"]        = vd["action_label"].get()
-                c["action_value"]        = vd["action_value"].get()
-                c["action_type"]         = vd["action_type"].get()
-                c["enabled"]             = vd["enabled"].get()
-        self.dm.save_carousel()
-        messagebox.showinfo("完成", "✅ 輪播卡片設定已儲存")
-        self.set_status("✅ 輪播卡片設定已儲存")
-
-    def _preview_carousel_json(self):
-        cards = []
-        for idx, vd in self.card_widgets:
-            if idx < len(self.dm.carousel):
-                cards.append({
-                    "title":               vd["title"].get(),
-                    "text":                vd["text"].get(),
-                    "thumbnail_image_url": vd["thumbnail_image_url"].get(),
-                    "action_label":        vd["action_label"].get(),
-                    "action_value":        vd["action_value"].get(),
-                    "action_type":         vd["action_type"].get(),
-                    "enabled":             vd["enabled"].get(),
-                })
-        flex = CarouselBuilder.build_carousel(cards)
-        win  = tk.Toplevel(self)
-        win.title("輪播 JSON 預覽")
-        win.geometry("700x500")
-        st = scrolledtext.ScrolledText(win, font=("Consolas", 9))
-        st.pack(fill="both", expand=True, padx=10, pady=10)
-        st.insert("end", json.dumps(flex, ensure_ascii=False, indent=2))
-        st.config(state="disabled")
-
-    # ── Tab 3: Webhook 設定 ──
-    def _build_webhook_tab(self):
-        fr = self.tab_webhook
-        tk.Label(fr, text="📡 Webhook 設定",
-                 font=("Microsoft JhengHei", 16, "bold"),
-                 bg=COLORS["background"], fg=COLORS["text_dark"],
-                 pady=10).pack(anchor="w", padx=15)
-
-        ng_fr = tk.LabelFrame(fr, text="ngrok 設定", font=("Microsoft JhengHei", 10),
-                               bg=COLORS["background"], padx=10, pady=8)
-        ng_fr.pack(fill="x", padx=15, pady=5)
-        tk.Label(ng_fr, text="伺服器 Port:", bg=COLORS["background"],
-                 font=("Microsoft JhengHei", 10)).grid(row=0, column=0, sticky="w")
-        self.port_var = tk.StringVar(value="5000")
-        tk.Entry(ng_fr, textvariable=self.port_var, width=10,
-                 font=("Arial", 10)).grid(row=0, column=1, sticky="w", padx=5)
-
-        url_fr = tk.LabelFrame(fr, text="各門市 Webhook URL",
-                                font=("Microsoft JhengHei", 10),
-                                bg=COLORS["background"], padx=10, pady=8)
-        url_fr.pack(fill="x", padx=15, pady=5)
-        self.webhook_domain_var = tk.StringVar(value="https://your-domain.ngrok.io")
-        tk.Label(url_fr, text="Webhook Domain:", bg=COLORS["background"],
-                 font=("Microsoft JhengHei", 10)).grid(row=0, column=0, sticky="w")
-        tk.Entry(url_fr, textvariable=self.webhook_domain_var, width=50,
-                 font=("Arial", 10)).grid(row=0, column=1, padx=5)
-        tk.Button(url_fr, text="產生 URL 列表", command=self._gen_webhook_urls,
-                  bg=COLORS["primary"], fg="white", font=("Microsoft JhengHei", 10),
-                  relief="flat", padx=10, cursor="hand2").grid(row=0, column=2, padx=5)
-
-        self.webhook_text = scrolledtext.ScrolledText(fr, height=12, font=("Consolas", 9),
-                                                       bg="#1E1E2E", fg="#A0AEC0")
-        self.webhook_text.pack(fill="both", expand=True, padx=15, pady=5)
-
-        srv_fr = tk.Frame(fr, bg=COLORS["background"])
-        srv_fr.pack(fill="x", padx=15, pady=5)
-        tk.Button(srv_fr, text="▶️ 啟動 Webhook 伺服器",
-                  command=self._start_webhook_server,
-                  bg=COLORS["success"], fg="white",
-                  font=("Microsoft JhengHei", 11, "bold"),
-                  relief="flat", padx=20, pady=8, cursor="hand2").pack(side="left", padx=5)
-        tk.Button(srv_fr, text="⏹️ 停止伺服器",
-                  command=self._stop_webhook_server,
-                  bg=COLORS["error"], fg="white",
-                  font=("Microsoft JhengHei", 11, "bold"),
-                  relief="flat", padx=20, pady=8, cursor="hand2").pack(side="left", padx=5)
-        self.server_status_lbl = tk.Label(srv_fr, text="⏸️ 伺服器未啟動",
-                                           font=("Microsoft JhengHei", 10),
-                                           bg=COLORS["background"], fg=COLORS["warning"])
-        self.server_status_lbl.pack(side="left", padx=15)
-
-    def _gen_webhook_urls(self):
-        domain = self.webhook_domain_var.get().rstrip("/")
-        self.webhook_text.config(state="normal")
-        self.webhook_text.delete("1.0", "end")
-        for s in self.dm.stores:
-            url = f"{domain}/webhook/{s['store_code']}"
-            self.webhook_text.insert("end", f"{s['store_code']:6s} | {s['store_name']:30s} | {url}\n")
-        self.webhook_text.config(state="disabled")
-
-    def _start_webhook_server(self):
-        if self.server_proc and self.server_proc.poll() is None:
-            messagebox.showinfo("提示", "伺服器已在運行中"); return
-        script = os.path.join(BASE_DIR, "webhook_server.py")
-        if not os.path.exists(script):
-            messagebox.showerror("錯誤", "找不到 webhook_server.py"); return
-        self.server_proc = subprocess.Popen(
-            [sys.executable, script],
-            creationflags=subprocess.CREATE_NEW_CONSOLE
-        )
-        self.server_status_lbl.config(text="✅ 伺服器運行中", fg=COLORS["success"])
-        self.set_status("✅ Webhook 伺服器已啟動")
-
-    def _stop_webhook_server(self):
-        if self.server_proc:
-            self.server_proc.terminate()
-            self.server_proc = None
-        self.server_status_lbl.config(text="⏸️ 伺服器已停止", fg=COLORS["warning"])
-        self.set_status("⏸️ Webhook 伺服器已停止")
-
-    # ── Tab 4: 操作日誌 ──
-    def _build_log_tab(self):
-        fr = self.tab_log
-        top = tk.Frame(fr, bg=COLORS["background"])
-        top.pack(fill="x", padx=15, pady=10)
-        tk.Label(top, text="📝 操作日誌",
-                 font=("Microsoft JhengHei", 16, "bold"),
-                 bg=COLORS["background"], fg=COLORS["text_dark"]).pack(side="left")
-        tk.Button(top, text="🗑️ 清除日誌", command=self._clear_log,
-                  bg=COLORS["error"], fg="white", font=("Microsoft JhengHei", 10),
-                  relief="flat", padx=12, pady=5, cursor="hand2").pack(side="right")
-        tk.Button(top, text="💾 匯出日誌", command=self._export_log,
-                  bg=COLORS["secondary"], fg="white", font=("Microsoft JhengHei", 10),
-                  relief="flat", padx=12, pady=5, cursor="hand2").pack(side="right", padx=5)
-        self.log_text = scrolledtext.ScrolledText(fr, state="disabled",
-                                                   font=("Consolas", 9),
-                                                   bg="#1E1E2E", fg="#A0AEC0")
-        self.log_text.pack(fill="both", expand=True, padx=15, pady=5)
-
-    def _clear_log(self):
-        self.log_text.config(state="normal")
-        self.log_text.delete("1.0", "end")
-        self.log_text.config(state="disabled")
-        self.log_lines.clear()
-
-    def _export_log(self):
-        path = filedialog.asksaveasfilename(
-            defaultextension=".txt",
-            filetypes=[("Text files", "*.txt")],
-            initialfile=f"log_{datetime.now():%Y%m%d_%H%M%S}.txt"
-        )
-        if path:
-            with open(path, "w", encoding="utf-8") as f:
-                f.write("\n".join(self.log_lines))
-            messagebox.showinfo("完成", f"日誌已匯出至:\n{path}")
-
-    def _on_close(self):
-        if self.server_proc and self.server_proc.poll() is None:
-            if messagebox.askyesno("確認關閉", "Webhook 伺服器仍在運行，確定關閉？"):
-                self.server_proc.terminate()
-                self.destroy()
+    def _rm_select_all(self, lb, select):
+        if select:
+            lb.select_set(0, "end")
         else:
-            self.destroy()
+            lb.select_clear(0, "end")
+
+    def _rm_browse_img(self):
+        p = filedialog.askopenfilename(
+            title="選擇 Rich Menu 圖片",
+            filetypes=[("PNG/JPG","*.png *.jpg *.jpeg"),("All","*.*")])
+        if p:
+            self.rm_img_var.set(p)
+
+    def _rm_load_store(self, lb):
+        sel = lb.curselection()
+        if not sel:
+            return
+        idx = sel[-1]
+        if idx >= len(self.stores):
+            return
+        store = self.stores[idx]
+        sid   = store.get("id","")
+        self.sel_store = store
+        self.rm_hint.config(text=f"✅ 已選：{sid} {store.get('name','')}", fg=C["teal"])
+        cfg = self.rm_config.get(sid, {})
+        blocks = cfg.get("blocks", {})
+        self.rm_img_var.set(cfg.get("image_url","assets/richmenu.png"))
+        for i in range(2, 7):
+            bdata = blocks.get(str(i), {})
+            self.rm_type_vars[i].set(bdata.get("type","uri"))
+            self.rm_action_vars[i].set(bdata.get("action",""))
+
+    def _rm_get_selected_stores(self):
+        sel = self._rm_lb_ref.curselection()
+        return [self.stores[i] for i in sel if i < len(self.stores)]
+
+    def _rm_log_msg(self, msg):
+        self.rm_log.config(state="normal")
+        self.rm_log.insert("end", f"[{datetime.now().strftime('%H:%M:%S')}] {msg}\n")
+        self.rm_log.see("end")
+        self.rm_log.config(state="disabled")
+
+    def _rm_save_cfg(self):
+        if not self.sel_store:
+            messagebox.showwarning("提示","請先點選左側門市")
+            return
+        sid = self.sel_store.get("id","")
+        if sid not in self.rm_config:
+            self.rm_config[sid] = {}
+        self.rm_config[sid]["image_url"] = self.rm_img_var.get()
+        blocks = {"1": {"type":"postback","action":"show_carousel"}}
+        for i in range(2, 7):
+            blocks[str(i)] = {
+                "type"  : self.rm_type_vars[i].get(),
+                "action": self.rm_action_vars[i].get()
+            }
+        self.rm_config[sid]["blocks"] = blocks
+        save_rm_config(self.rm_config)
+        self._rm_log_msg(f"[{sid}] 設定已儲存")
+        messagebox.showinfo("完成",f"{sid} 設定已儲存")
+
+    def _make_rm_body(self, sid):
+        cfg    = self.rm_config.get(sid, {})
+        blocks = cfg.get("blocks", {})
+        areas  = []
+        for i, layout in enumerate(BLOCKS_LAYOUT, 1):
+            row = 0 if i <= 3 else 1
+            b   = blocks.get(str(i), {})
+            btype   = b.get("type","uri")
+            baction = b.get("action","")
+            if btype == "uri":
+                action = {"type":"uri","uri": baction or "https://www.wellcare.com.tw"}
+            elif btype == "message":
+                action = {"type":"message","text": baction or sid}
+            else:
+                action = {"type":"postback","data": baction or "show_carousel",
+                          "displayText":"查看最新優惠"}
+            areas.append({
+                "bounds":{"x": layout["x"],
+                          "y": BLOCK_Y + row * BLOCK_H,
+                          "width": layout["w"], "height": BLOCK_H},
+                "action": action
+            })
+        return {
+            "size":   {"width": RM_W, "height": RM_H},
+            "selected": True,
+            "name":   cfg.get("menu_name", f"{sid}主選單"),
+            "chatBarText": "點我開啟選單",
+            "areas":  areas
+        }
+
+    def _rm_query(self):
+        stores = self._rm_get_selected_stores()
+        if not stores:
+            messagebox.showwarning("提示","請先勾選門市")
+            return
+        def run():
+            for s in stores:
+                token = s.get("channel_access_token","")
+                sid   = s.get("id","")
+                if not token:
+                    self._rm_log_msg(f"[{sid}] 無 token，跳過")
+                    continue
+                try:
+                    r = requests.get(
+                        "https://api.line.me/v2/bot/richmenu/list",
+                        headers={"Authorization":f"Bearer {token}"}, timeout=10)
+                    data  = r.json()
+                    menus = data.get("richmenus",[])
+                    self._rm_log_msg(f"[{sid}] 查到 {len(menus)} 個 Rich Menu")
+                    for m in menus:
+                        self._rm_log_msg(f"  ├ {m.get('richMenuId','')}  {m.get('name','')}")
+                except Exception as e:
+                    self._rm_log_msg(f"[{sid}] 查詢失敗: {e}")
+        threading.Thread(target=run, daemon=True).start()
+
+    def _rm_create(self):
+        stores = self._rm_get_selected_stores()
+        if not stores:
+            messagebox.showwarning("提示","請先勾選門市")
+            return
+        def run():
+            for s in stores:
+                token = s.get("channel_access_token","")
+                sid   = s.get("id","")
+                if not token:
+                    self._rm_log_msg(f"[{sid}] 無 token，跳過")
+                    continue
+                body = self._make_rm_body(sid)
+                try:
+                    r = requests.post(
+                        "https://api.line.me/v2/bot/richmenu",
+                        headers={"Authorization":f"Bearer {token}",
+                                 "Content-Type":"application/json"},
+                        json=body, timeout=15)
+                    if r.status_code == 200:
+                        rm_id = r.json().get("richMenuId","")
+                        self._rm_log_msg(f"[{sid}] 建立成功: {rm_id}")
+                        if sid not in self.rm_config:
+                            self.rm_config[sid] = {}
+                        self.rm_config[sid]["rich_menu_id"] = rm_id
+                        save_rm_config(self.rm_config)
+                    else:
+                        self._rm_log_msg(f"[{sid}] 建立失敗 {r.status_code}: {r.text[:200]}")
+                except Exception as e:
+                    self._rm_log_msg(f"[{sid}] 例外: {e}")
+        threading.Thread(target=run, daemon=True).start()
+
+    def _rm_upload_img(self):
+        stores = self._rm_get_selected_stores()
+        if not stores:
+            messagebox.showwarning("提示","請先勾選門市")
+            return
+        img_path = self.rm_img_var.get()
+        if not os.path.exists(img_path):
+            messagebox.showerror("錯誤",f"圖片不存在:\n{img_path}")
+            return
+        def run():
+            for s in stores:
+                token = s.get("channel_access_token","")
+                sid   = s.get("id","")
+                rm_id = self.rm_config.get(sid,{}).get("rich_menu_id","")
+                if not token or not rm_id:
+                    self._rm_log_msg(f"[{sid}] 缺少 token 或 rich_menu_id，跳過")
+                    continue
+                try:
+                    with open(img_path,"rb") as f:
+                        ct = "image/png" if img_path.lower().endswith(".png") else "image/jpeg"
+                        r  = requests.post(
+                            f"https://api-data.line.me/v2/bot/richmenu/{rm_id}/content",
+                            headers={"Authorization":f"Bearer {token}",
+                                     "Content-Type": ct},
+                            data=f.read(), timeout=30)
+                    if r.status_code == 200:
+                        self._rm_log_msg(f"[{sid}] 圖片上傳成功")
+                    else:
+                        self._rm_log_msg(f"[{sid}] 上傳失敗 {r.status_code}: {r.text[:200]}")
+                except Exception as e:
+                    self._rm_log_msg(f"[{sid}] 例外: {e}")
+        threading.Thread(target=run, daemon=True).start()
+
+    def _rm_set_default(self):
+        stores = self._rm_get_selected_stores()
+        if not stores:
+            messagebox.showwarning("提示","請先勾選門市")
+            return
+        def run():
+            for s in stores:
+                token = s.get("channel_access_token","")
+                sid   = s.get("id","")
+                rm_id = self.rm_config.get(sid,{}).get("rich_menu_id","")
+                if not token or not rm_id:
+                    self._rm_log_msg(f"[{sid}] 缺少 token 或 rich_menu_id，跳過")
+                    continue
+                try:
+                    r = requests.post(
+                        f"https://api.line.me/v2/bot/user/all/richmenu/{rm_id}",
+                        headers={"Authorization":f"Bearer {token}"}, timeout=10)
+                    if r.status_code == 200:
+                        self._rm_log_msg(f"[{sid}] 設為預設成功")
+                    else:
+                        self._rm_log_msg(f"[{sid}] 失敗 {r.status_code}: {r.text[:200]}")
+                except Exception as e:
+                    self._rm_log_msg(f"[{sid}] 例外: {e}")
+        threading.Thread(target=run, daemon=True).start()
+
+    def _rm_delete(self):
+        stores = self._rm_get_selected_stores()
+        if not stores:
+            messagebox.showwarning("提示","請先勾選門市")
+            return
+        if not messagebox.askyesno("確認","確定刪除所選門市的 Rich Menu？"):
+            return
+        def run():
+            for s in stores:
+                token = s.get("channel_access_token","")
+                sid   = s.get("id","")
+                rm_id = self.rm_config.get(sid,{}).get("rich_menu_id","")
+                if not token or not rm_id:
+                    self._rm_log_msg(f"[{sid}] 缺少資訊，跳過")
+                    continue
+                try:
+                    r = requests.delete(
+                        f"https://api.line.me/v2/bot/richmenu/{rm_id}",
+                        headers={"Authorization":f"Bearer {token}"}, timeout=10)
+                    if r.status_code == 200:
+                        self._rm_log_msg(f"[{sid}] 刪除成功")
+                    else:
+                        self._rm_log_msg(f"[{sid}] 失敗 {r.status_code}: {r.text[:200]}")
+                except Exception as e:
+                    self._rm_log_msg(f"[{sid}] 例外: {e}")
+        threading.Thread(target=run, daemon=True).start()
+
+    def _rm_deploy_all(self):
+        stores = self._rm_get_selected_stores()
+        if not stores:
+            messagebox.showwarning("提示","請先勾選門市")
+            return
+        img_path = self.rm_img_var.get()
+        if not os.path.exists(img_path):
+            messagebox.showerror("錯誤",f"圖片不存在:\n{img_path}")
+            return
+        self._rm_log_msg(f"=== 一鍵部署開始：{len(stores)} 間門市 ===")
+        def run():
+            for s in stores:
+                token = s.get("channel_access_token","")
+                sid   = s.get("id","")
+                if not token:
+                    self._rm_log_msg(f"[{sid}] 無 token，跳過")
+                    continue
+                body = self._make_rm_body(sid)
+                try:
+                    r = requests.post(
+                        "https://api.line.me/v2/bot/richmenu",
+                        headers={"Authorization":f"Bearer {token}",
+                                 "Content-Type":"application/json"},
+                        json=body, timeout=15)
+                    if r.status_code != 200:
+                        self._rm_log_msg(f"[{sid}] 建立失敗: {r.text[:100]}")
+                        continue
+                    rm_id = r.json().get("richMenuId","")
+                    self._rm_log_msg(f"[{sid}] ① 建立 OK: {rm_id}")
+                    if sid not in self.rm_config:
+                        self.rm_config[sid] = {}
+                    self.rm_config[sid]["rich_menu_id"] = rm_id
+                    save_rm_config(self.rm_config)
+                except Exception as e:
+                    self._rm_log_msg(f"[{sid}] 建立例外: {e}")
+                    continue
+                try:
+                    with open(img_path,"rb") as f:
+                        ct = "image/png" if img_path.lower().endswith(".png") else "image/jpeg"
+                        r2 = requests.post(
+                            f"https://api-data.line.me/v2/bot/richmenu/{rm_id}/content",
+                            headers={"Authorization":f"Bearer {token}","Content-Type":ct},
+                            data=f.read(), timeout=30)
+                    if r2.status_code == 200:
+                        self._rm_log_msg(f"[{sid}] ② 上傳圖片 OK")
+                    else:
+                        self._rm_log_msg(f"[{sid}] ② 上傳失敗: {r2.text[:100]}")
+                        continue
+                except Exception as e:
+                    self._rm_log_msg(f"[{sid}] 上傳例外: {e}")
+                    continue
+                try:
+                    r3 = requests.post(
+                        f"https://api.line.me/v2/bot/user/all/richmenu/{rm_id}",
+                        headers={"Authorization":f"Bearer {token}"}, timeout=10)
+                    if r3.status_code == 200:
+                        self._rm_log_msg(f"[{sid}] ③ 設預設 OK ✅")
+                    else:
+                        self._rm_log_msg(f"[{sid}] ③ 設預設失敗: {r3.text[:100]}")
+                except Exception as e:
+                    self._rm_log_msg(f"[{sid}] 設預設例外: {e}")
+            self._rm_log_msg("=== 一鍵部署完畢 ===")
+        threading.Thread(target=run, daemon=True).start()
+
+    # ════════════════════════════════════════════════════
+    #  頁面：輪播卡片  ← ★ v2.3.0 Image Carousel Template
+    # ════════════════════════════════════════════════════
+    def _page_carousel(self):
+        parent = self.content
+        for w in parent.winfo_children():
+            w.destroy()
+
+        tk.Label(parent, text="🖼️ 輪播卡片管理 (Image Carousel Template)",
+                 font=("微軟正黑體", 16, "bold"),
+                 bg=C["main_bg"], fg=C["text"]).pack(pady=(20, 10))
+
+        carousel_path = os.path.join(BASE_DIR, "data", "carousel.json")
+        try:
+            with open(carousel_path, "r", encoding="utf-8-sig") as f:
+                data = json.load(f)
+            cards = data.get("cards", [])
+        except Exception as e:
+            messagebox.showerror("讀取失敗", str(e))
+            return
+
+        outer = tk.Frame(parent, bg=C["main_bg"])
+        outer.pack(fill="both", expand=True, padx=20, pady=(0, 10))
+
+        canvas    = tk.Canvas(outer, bg=C["main_bg"], highlightthickness=0)
+        scrollbar = ttk.Scrollbar(outer, orient="vertical", command=canvas.yview)
+        sf        = tk.Frame(canvas, bg=C["main_bg"])
+        sf.bind("<Configure>",
+                lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.create_window((0, 0), window=sf, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        entries = []
+
+        for i, card in enumerate(cards):
+            frm = tk.LabelFrame(sf, text=f"Card {i+1}",
+                                font=("微軟正黑體", 11, "bold"),
+                                bg=C["card_bg"], fg=C["dark"],
+                                padx=10, pady=8)
+            frm.pack(fill="x", padx=10, pady=8)
+
+            tk.Label(frm, text="id :", bg=C["card_bg"], width=12, anchor="w",
+                     font=("微軟正黑體", 10)).grid(row=0, column=0, sticky="w")
+            id_var = tk.StringVar(value=card.get("id", ""))
+            tk.Entry(frm, textvariable=id_var, width=40,
+                     font=("微軟正黑體", 10)).grid(row=0, column=1, sticky="w", pady=2)
+
+            tk.Label(frm, text="title :", bg=C["card_bg"], width=12, anchor="w",
+                     font=("微軟正黑體", 10)).grid(row=1, column=0, sticky="w")
+            title_var = tk.StringVar(value=card.get("title", ""))
+            tk.Entry(frm, textvariable=title_var, width=40,
+                     font=("微軟正黑體", 10)).grid(row=1, column=1, sticky="w", pady=2)
+
+            tk.Label(frm, text="imageUrl :", bg=C["card_bg"], width=12, anchor="w",
+                     font=("微軟正黑體", 10)).grid(row=2, column=0, sticky="w")
+            url_var = tk.StringVar(value=card.get("imageUrl", ""))
+            tk.Entry(frm, textvariable=url_var, width=65,
+                     font=("微軟正黑體", 10)).grid(row=2, column=1, sticky="w", pady=2)
+
+            tk.Label(frm, text="reply_text :", bg=C["card_bg"], width=12, anchor="nw",
+                     font=("微軟正黑體", 10)).grid(row=3, column=0, sticky="nw", pady=(4, 0))
+            rt = tk.Text(frm, width=65, height=4, font=("微軟正黑體", 10))
+            rt.grid(row=3, column=1, sticky="w", pady=2)
+            rt.insert("1.0", card.get("reply_text", ""))
+
+            entries.append((id_var, title_var, url_var, rt))
+
+        def save_carousel():
+            new_cards = []
+            for id_v, title_v, url_v, rt_w in entries:
+                new_cards.append({
+                    "id":         id_v.get().strip(),
+                    "title":      title_v.get().strip(),
+                    "imageUrl":   url_v.get().strip(),
+                    "reply_text": rt_w.get("1.0", "end").strip()
+                })
+            try:
+                with open(carousel_path, "w", encoding="utf-8") as f:
+                    json.dump({"cards": new_cards}, f,
+                              ensure_ascii=False, indent=2)
+                messagebox.showinfo("成功",
+                    f"carousel.json 已儲存！共 {len(new_cards)} 張卡片")
+            except Exception as e:
+                messagebox.showerror("儲存失敗", str(e))
+
+        tk.Button(parent, text="💾  儲存 carousel.json",
+                  command=save_carousel,
+                  bg=C["teal"], fg="white",
+                  font=("微軟正黑體", 12, "bold"),
+                  padx=20, pady=8, relief="flat",
+                  cursor="hand2").pack(pady=12)
+    # ════════════════════════════════════════════════════
+    #  頁面：Webhook
+    # ════════════════════════════════════════════════════
+    def _page_webhook(self):
+        f = tk.Frame(self.content, bg=C["main_bg"])
+        f.pack(fill="both", expand=True, padx=30, pady=20)
+        tk.Label(f, text="Webhook 設定", font=("微軟正黑體",18,"bold"),
+                 bg=C["main_bg"], fg=C["text"]).pack(anchor="w", pady=(0,6))
+        tk.Label(f,
+                 text="請將以下 URL 填入各門市的 LINE Developers Console"
+                      " → Messaging API → Webhook URL",
+                 font=("微軟正黑體",10), bg=C["main_bg"], fg=C["sub"]
+                 ).pack(anchor="w", pady=(0,10))
+
+        txt = tk.Text(f, font=("Consolas",10), bg=C["card_bg"],
+                      fg=C["text"], relief="solid", borderwidth=1)
+        txt.pack(fill="both", expand=True)
+
+        for s in self.stores:
+            sid = s.get("id","")
+            url = f"{WEBHOOK_BASE}/{sid}"
+            txt.insert("end", f"{sid}  {s.get('name','')}\n")
+            txt.insert("end", f"  → {url}\n\n")
+        txt.config(state="disabled")
+
+    # ════════════════════════════════════════════════════
+    #  頁面：操作日誌
+    # ════════════════════════════════════════════════════
+    def _page_log(self):
+        f = tk.Frame(self.content, bg=C["main_bg"])
+        f.pack(fill="both", expand=True, padx=30, pady=20)
+        tk.Label(f, text="操作日誌", font=("微軟正黑體",18,"bold"),
+                 bg=C["main_bg"], fg=C["text"]).pack(anchor="w", pady=(0,10))
+        log = tk.Text(f, font=("Consolas",10), bg=C["log_bg"],
+                      fg=C["log_fg"], relief="flat", state="disabled")
+        log.pack(fill="both", expand=True)
+        log.config(state="normal")
+        log.insert("end",
+                   f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] 系統啟動\n")
+        log.insert("end", f"[INFO] 載入門市數: {len(self.stores)}\n")
+        log.insert("end", f"[INFO] 輪播卡片數: {len(self.carousel)}\n")
+        log.config(state="disabled")
 
 
+# ════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    app = MainApp()
+    app = App()
     app.mainloop()
