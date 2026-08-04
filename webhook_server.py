@@ -1,225 +1,129 @@
-﻿# -*- coding: utf-8 -*-
-from flask import Flask, request, abort, jsonify
-from linebot import LineBotApi, WebhookHandler
-from linebot.exceptions import InvalidSignatureError
+import os, json, hashlib, hmac, base64, logging
+from flask import Flask, request, abort
+from linebot import LineBotApi, WebhookParser
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
-    PostbackEvent, FlexSendMessage
+    TextSendMessage, TemplateSendMessage,
+    ImageCarouselTemplate, ImageCarouselColumn,
+    MessageTemplateAction,
+    PostbackEvent, MessageEvent
 )
-import json, os, logging
-from datetime import datetime
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR  = os.path.join(BASE_DIR, "data")
-LOGS_DIR  = os.path.join(BASE_DIR, "logs")
-STORES_FILE   = os.path.join(DATA_DIR, "stores.json")
-CAROUSEL_FILE = os.path.join(DATA_DIR, "carousel.json")
-
-os.makedirs(LOGS_DIR, exist_ok=True)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(os.path.join(LOGS_DIR, "webhook.log"), encoding="utf-8"),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# ─── 資料載入 ──────────────────────────────────────────
+VERSION = "v1.8.0"
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+
+
 def load_stores():
-    with open(STORES_FILE, "r", encoding="utf-8-sig") as f:
+    path = os.path.join(DATA_DIR, "stores.json")
+    with open(path, encoding="utf-8-sig") as f:
         data = json.load(f)
-    # 相容兩種格式：直接陣列 or {"stores": [...]}
-    if isinstance(data, list):
-        return data
-    return data.get("stores", [])
+    return data if isinstance(data, list) else data.get("stores", [])
+
 
 def load_carousel():
-    with open(CAROUSEL_FILE, "r", encoding="utf-8-sig") as f:
-        data = json.load(f)
-    if isinstance(data, list):
-        return data
-    return data.get("carousel_cards", data.get("cards", []))
+    path = os.path.join(DATA_DIR, "carousel.json")
+    with open(path, encoding="utf-8-sig") as f:
+        return json.load(f)
+
 
 def get_store(store_id):
-    # 同時比對 id 和 store_code 欄位，確保相容性
     for s in load_stores():
-        if s.get("id") == store_id or s.get("store_code") == store_id:
+        if s.get("id") == store_id:
             return s
     return None
 
-# ─── Flex Carousel 建構 ────────────────────────────────
-def build_carousel_flex(cards):
-    bubbles = []
+
+def build_image_carousel(cards):
+    columns = []
     for card in cards:
-        if not card.get("enabled", True):
-            continue
-        # 優先使用新版 actions 陣列，fallback 到舊版欄位
-        actions_list = card.get("actions", [])
-        if actions_list:
-            a = actions_list[0]
-            atype = a.get("type", "uri")
-            albl  = a.get("label", "了解更多")
-            if atype == "uri":
-                action = {"type": "uri", "label": albl, "uri": a.get("uri", a.get("url", ""))}
-            else:
-                action = {"type": "message", "label": albl, "text": a.get("text", "")}
-        else:
-            atype = card.get("action_type", "uri")
-            aval  = card.get("action_value", "")
-            albl  = card.get("action_label", "了解更多")
-            if atype == "uri":
-                action = {"type": "uri", "label": albl, "uri": aval}
-            else:
-                action = {"type": "message", "label": albl, "text": aval}
+        columns.append(
+            ImageCarouselColumn(
+                image_url=card["imageUrl"],
+                action=MessageTemplateAction(
+                    label="了解更多",
+                    text=card["action_text"]
+                )
+            )
+        )
+    return TemplateSendMessage(
+        alt_text="本月精選商品",
+        template=ImageCarouselTemplate(columns=columns)
+    )
 
-        img_url = card.get("thumbnailImageUrl", card.get("thumbnail_image_url", ""))
 
-        bubble = {
-            "type": "bubble",
-            "size": "mega",
-            "hero": {
-                "type": "image",
-                "url": img_url,
-                "size": "full",
-                "aspectRatio": "20:13",
-                "aspectMode": "cover",
-                "action": action
-            },
-            "body": {
-                "type": "box",
-                "layout": "vertical",
-                "paddingAll": "16px",
-                "contents": [
-                    {
-                        "type": "text",
-                        "text": card.get("title", ""),
-                        "weight": "bold",
-                        "size": "xl",
-                        "color": "#1A1A2E",
-                        "wrap": True
-                    },
-                    {
-                        "type": "text",
-                        "text": card.get("text", ""),
-                        "size": "sm",
-                        "color": "#6B7280",
-                        "wrap": True,
-                        "margin": "md"
-                    }
-                ]
-            },
-            "footer": {
-                "type": "box",
-                "layout": "vertical",
-                "paddingAll": "12px",
-                "contents": [
-                    {
-                        "type": "button",
-                        "action": action,
-                        "style": "primary",
-                        "color": "#06C755",
-                        "height": "sm"
-                    }
-                ]
-            }
-        }
-        bubbles.append(bubble)
+def handle_message(event, store):
+    user_text = event.message.text.strip()
+    cards = load_carousel().get("cards", [])
+    logger.info(f"[MSG] store={store.get('id')} text={user_text}")
 
-    if not bubbles:
-        return None
-    return {"type": "carousel", "contents": bubbles}
+    for card in cards:
+        if user_text == card.get("action_text", ""):
+            reply_text = card.get("reply_text", "")
+            line_bot_api = LineBotApi(store["channel_access_token"])
+            logger.info(f"[REPLY] card={card.get('id')} token_len={len(event.reply_token)}")
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=reply_text)
+            )
+            return
+    # 不符合任何 action_text → 靜默忽略
+    logger.info(f"[MSG] no match for: {user_text}")
 
-# ─── 路由 ──────────────────────────────────────────────
-@app.route("/", methods=["GET"])
+
+@app.route("/")
 def index():
-    stores = load_stores()
-    return jsonify({
-        "status": "ok",
-        "service": "維康醫療用品 LINE OA Webhook Server",
-        "version": "1.1.0",
-        "stores_loaded": len(stores),
-        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    })
+    return f"Wellcare Webhook {VERSION} OK", 200
 
-@app.route("/health", methods=["GET"])
-def health():
-    stores = load_stores()
-    return jsonify({
-        "status": "healthy",
-        "stores_count": len(stores)
-    })
 
 @app.route("/webhook/<store_id>", methods=["POST"])
 def webhook(store_id):
     store = get_store(store_id)
     if not store:
-        logger.warning(f"未知門市代碼: {store_id}")
+        logger.warning(f"[STORE] not found: {store_id}")
         abort(404)
 
-    token  = store.get("channel_access_token", "").strip()
-    secret = store.get("channel_secret", "").strip()
-    if not token or not secret:
-        logger.error(f"[{store_id}] 缺少 Token 或 Secret")
-        abort(500)
-
-    line_bot_api = LineBotApi(token)
-    handler      = WebhookHandler(secret)
-
+    body = request.get_data()
     signature = request.headers.get("X-Line-Signature", "")
-    body      = request.get_data(as_text=True)
-    logger.info(f"[{store_id}] 收到 Webhook body={body[:200]}")
+    secret = store.get("channel_secret", "")
 
-    def send_carousel(reply_token):
-        cards = load_carousel()
-        flex  = build_carousel_flex(cards)
-        if flex:
-            line_bot_api.reply_message(
-                reply_token,
-                FlexSendMessage(alt_text="維康醫療用品 商品目錄", contents=flex)
-            )
-            logger.info(f"[{store_id}] Carousel 已發送 ({len(flex['contents'])} 張)")
-        else:
-            line_bot_api.reply_message(
-                reply_token,
-                TextSendMessage(text="目前無商品資料，請稍後再試。")
-            )
-            logger.warning(f"[{store_id}] Carousel 無可用卡片")
-
-    @handler.add(MessageEvent, message=TextMessage)
-    def handle_message(event):
-        text = event.message.text.strip()
-        logger.info(f"[{store_id}] 文字訊息: {text}")
-        keywords = ["商品", "產品", "目錄", "商品目錄", "show_carousel"]
-        if any(k in text for k in keywords):
-            send_carousel(event.reply_token)
-        else:
-            logger.info(f"[{store_id}] 非關鍵字訊息，靜默不回應: {text}")
-
-    @handler.add(PostbackEvent)
-    def handle_postback(event):
-        data = event.postback.data.strip()
-        logger.info(f"[{store_id}] Postback data: {data}")
-        if data == "show_carousel" or "show_carousel" in data:
-            send_carousel(event.reply_token)
-        else:
-            logger.info(f"[{store_id}] 未處理的 postback: {data}")
-
-    try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        logger.error(f"[{store_id}] 簽名驗證失敗")
+    mac = hmac.new(secret.encode("utf-8"), body, hashlib.sha256).digest()
+    expected = base64.b64encode(mac).decode("utf-8")
+    if not hmac.compare_digest(expected, signature):
+        logger.warning(f"[SIG] invalid for store={store_id}")
         abort(400)
-    except Exception as e:
-        logger.error(f"[{store_id}] 處理錯誤: {e}", exc_info=True)
-        abort(500)
 
-    return "OK"
+    parser = WebhookParser(store["channel_secret"])
+    try:
+        events = parser.parse(body.decode("utf-8"), signature)
+    except Exception as e:
+        logger.error(f"[PARSE] {e}")
+        abort(400)
+
+    for event in events:
+        logger.info(f"[EVENT] type={type(event).__name__} store={store_id}")
+
+        if isinstance(event, PostbackEvent):
+            data = event.postback.data
+            logger.info(f"[POSTBACK] data={data}")
+            if data == "show_carousel":
+                carousel_data = load_carousel()
+                cards = carousel_data.get("cards", [])
+                if not cards:
+                    logger.warning("[CAROUSEL] no cards found")
+                    continue
+                line_bot_api = LineBotApi(store["channel_access_token"])
+                msg = build_image_carousel(cards)
+                logger.info(f"[CAROUSEL] sending {len(cards)} cards")
+                line_bot_api.reply_message(event.reply_token, msg)
+
+        elif isinstance(event, MessageEvent):
+            handle_message(event, store)
+
+    return "OK", 200
+
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    logger.info(f"Webhook Server v1.1.0 啟動 port={port}")
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
