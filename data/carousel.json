@@ -3,23 +3,23 @@
     {
       "id": "card_vitc",
       "title": "(新品)Nucode營養密碼 維生素C 緩釋錠 會員價$450",
-      "imageUrl": "https://raw.githubusercontent.com/duketu0918-crypto/wellcare-webhook/main/assets/vitc.jpg?v=2",
+      "imageUrl": "https://i.postimg.cc/y8yfQss8/vit-C.png",
       "action_text": "vitc_info",
-      "reply_text": "【一錠搞定每日維他命C需求~】\n# 緩釋長效配方，吸收更完整。\n# 500mg高含量，輕鬆補充不費力。\n# 無添加糖、無香料、全素可食、無酸甜味，好吞服。"
+      "reply_text": "【一錠搞定每日維他命C需求～】\n# 緩釋長效配方，吸收更完整。\n# 500mg高含量，輕鬆補充不費力。\n# 無添加糖、無香料、全素可食、無酸甜味，好吞服。"
     },
     {
       "id": "card_fishoil",
       "title": "Nucode 營養密碼魚油EPA+芝麻素軟膠囊 本檔$899",
-      "imageUrl": "https://raw.githubusercontent.com/duketu0918-crypto/wellcare-webhook/main/assets/fishoil.jpg?v=2",
+      "imageUrl": "https://i.postimg.cc/G3X5rcyf/115nian88jie-LINE-menu-ya004.png",
       "action_text": "fishoil_info",
-      "reply_text": "【守護您日夜的好魚油~】\n# 植化素協同增強效果，專利萃取技術芝麻素，幫助入睡。\n# QUALITY SILVER® 最高等級製造品質，無油耗味。\n# 法國頂級魚油 OmegaVie®品牌低溫冷壓初榨取，超臨界萃取，確保營養及美味。"
+      "reply_text": "【守護您日夜的好魚油～】\n# 植化素協同增強效果，專利萃取技術芝麻素，幫助入睡。\n# QUALITY SILVER® 最高等級製造品質，無油耗味。\n# 法國頂級魚油 OmegaVie® 品牌低溫冷壓初榨取，超臨界萃取，確保營養及美味。"
     },
     {
       "id": "card_beyoung",
       "title": "BEYOUNG必漾 精粹青春禮 本檔$1999",
-      "imageUrl": "https://raw.githubusercontent.com/duketu0918-crypto/wellcare-webhook/main/assets/face.jpg?v=2",
+      "imageUrl": "https://i.postimg.cc/9XpC9VgC/bi-yang.png",
       "action_text": "beyoung_info",
-      "reply_text": "【精粹全效修復乳霜 50g】\n# 阻黑亮白：專利CELLYOUNG®桃花萃取。\n# 抗氧能量：專利SuperX®鮮人蔘。\n# 深層導入：獨家LipoButy微美科技。\n\n【精粹亮白賦活精華液 30ml】\n# 阻黑亮白：專利CELLYOUNG®桃花萃取。\n# 抗氧能量：專利SuperX®鮮人蔘。\n# 深層導入：獨家LipoButy微美科技。\n# 緊俏肌膚：西番蓮果萃取。\n# 水潤保濕：複合胺基酸。\n# 長效鎖水：海洋紅藻萃取。\n# 逆齡抗皺：大馬士革玫瑰。\n# 提升肌膚防護力：仿生神經醯胺。\n# 潤澤保護：有機乳木果油。\n\n【精粹亮白生物纖維面膜 (3片)/盒】\n# 潤澤保濕：玻尿酸。\n# 舒敏細緻：米糠萃取。\n# 精粹亮白：桃花萃取。\n# 雙效阻黑：維生素C磷酸鹽、傳明酸。"
+      "reply_text": "【精粹全效修復乳霜 50g】\n# 阻黑亮白：專利ICELLYOUNG® 桃花萃取。\n# 抗氧能量：專利SuperX® 鮮人蔘。\n# 深層清潔：獨家LipoBud微善科技。\n\n【精粹賦活奇肌精華液 30ml】\n# 煥白亮澤：熊果素+VC衍生物。\n# 緊緻拉提：7重玻尿酸+膠原蛋白。\n# 深層保濕：高濃度玻尿酸鈉。\n\n【精粹活膚保濕面膜 5片/盒】\n# 深層補水：透明質酸+蠶絲蛋白。\n# 抗老緊緻：積雪草萃取+維生素E。\n# 保濕鎖水：天然植物精萃。"
     }
   ]
 }
