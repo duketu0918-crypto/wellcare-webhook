@@ -1,25 +1,25 @@
 {
-  "cards": [
-    {
-      "id": "card_vitc",
-      "title": "(新品)Nucode營養密碼 維生素C 緩釋錠 會員價$450",
-      "imageUrl": "https://raw.githubusercontent.com/duketu0918-crypto/wellcare-webhook/main/VIt-c.png",
-      "action_text": "vitc_info",
-      "reply_text": "🌟【維生素C 緩釋錠】\n✅ 品牌：Nucode 營養密碼\n💊 規格：緩釋配方，持續吸收\n💰 會員價：$450\n📦 促進膠原蛋白合成，增強免疫力！\n歡迎至門市詢問🏪"
-    },
-    {
-      "id": "card_fishoil",
-      "title": "Nucode 營養密碼魚油EPA+芝麻素軟膠囊 本檔$899",
-      "imageUrl": "https://raw.githubusercontent.com/duketu0918-crypto/wellcare-webhook/main/fish-oil.png",
-      "action_text": "fishoil_info",
-      "reply_text": "🐟【魚油EPA+芝麻素軟膠囊】\n✅ 品牌：Nucode 營養密碼\n💊 規格：魚油EPA＋芝麻素複合配方\n💰 本檔特價：$899\n📦 護心、顧腦、抗氧化三效合一！\n歡迎至門市詢問🏪"
-    },
-    {
-      "id": "card_beyoung",
-      "title": "BEYOUNG必漾 精粹青春禮 本檔$1999",
-      "imageUrl": "https://raw.githubusercontent.com/duketu0918-crypto/wellcare-webhook/main/face.jpg",
-      "action_text": "beyoung_info",
-      "reply_text": "✨【BEYOUNG必漾 精粹青春禮】\n✅ 品牌：BEYOUNG 必漾\n💊 規格：精粹青春禮盒組\n💰 本檔特價：$1999\n📦 逆齡美顏，由內而外煥發青春光彩！\n歡迎至門市詢問🏪"
-    }
-  ]
+    "cards":  [
+                  {
+                      "title":  "(新品)Nucode 維生素C 緩釋錠 $450",
+                      "action_text":  "vitc_info",
+                      "id":  "card_vitc",
+                      "reply_text":  "【Nucode 維生素C 緩釋錠】\n✅ 規格：60錠/瓶\n💰 售價：$450\n🌟 緩釋配方，全天候穩定補充，提升免疫力、促進膠原蛋白合成。\n📍 維康門市均有販售",
+                      "imageUrl":  "https://duketu0918-crypto.github.io/wellcare-webhook/assets/vitc.jpg"
+                  },
+                  {
+                      "title":  "Nucode 魚油EPA+芝麻素 $899",
+                      "action_text":  "fishoil_info",
+                      "id":  "card_fishoil",
+                      "reply_text":  "【Nucode 魚油EPA+芝麻素】\n✅ 規格：60顆/盒\n💰 售價：$899\n🌟 高純度EPA+DHA，搭配芝麻素加乘吸收，守護心血管健康。\n📍 維康門市均有販售",
+                      "imageUrl":  "https://duketu0918-crypto.github.io/wellcare-webhook/assets/fishoil.jpg"
+                  },
+                  {
+                      "title":  "BEYOUNG 精粹青春禮 $1999",
+                      "action_text":  "beyoung_info",
+                      "id":  "card_beyoung",
+                      "reply_text":  "【BEYOUNG 精粹青春禮盒】\n✅ 規格：禮盒組/組\n💰 售價：$1,999\n🌟 精選抗氧化成分，送禮自用兩相宜，煥活青春好氣色。\n📍 維康門市均有販售",
+                      "imageUrl":  "https://duketu0918-crypto.github.io/wellcare-webhook/assets/beyoung.jpg"
+                  }
+              ]
 }
