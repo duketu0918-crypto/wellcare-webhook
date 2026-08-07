@@ -20,6 +20,27 @@
       "imageUrl": "https://duketu0918-crypto.github.io/wellcare-webhook/assets/beyoung.jpg",
       "action_text": "必漾 精粹青春禮",
       "reply_text": "✨【精粹全效修復乳霜 50g】\n💧【精粹亮白賦活精華液 30ml】\n🎭【精粹亮白生物纖維面膜 (3片)/盒】"
+    },
+    {
+      "id": "card_4",
+      "title": "歐姆龍血壓計 115年8月限時優惠",
+      "imageUrl": "https://duketu0918-crypto.github.io/wellcare-webhook/assets/bp_aug.png",
+      "action_text": "card4_info",
+      "reply_text": "🩺【居家健康守護 從量血壓開始】\n\n歐姆龍血壓計 115年8月限時優惠\n精準測量、簡單操作，居家自我健康管理首選！\n\n✅ 醫療級精準感測\n✅ 大螢幕數字顯示，長輩好讀\n✅ 不規則脈搏自動提示\n✅ 記憶儲存60筆，掌握趨勢\n\n💰 門市優惠中，歡迎洽詢！"
+    },
+    {
+      "id": "card_5",
+      "title": "歐姆龍血壓計 115年8月限時優惠",
+      "imageUrl": "https://duketu0918-crypto.github.io/wellcare-webhook/assets/bp_aug.png",
+      "action_text": "card5_info",
+      "reply_text": "🩺【居家健康守護 從量血壓開始】\n\n歐姆龍血壓計 115年8月限時優惠\n精準測量、簡單操作，居家自我健康管理首選！\n\n✅ 醫療級精準感測\n✅ 大螢幕數字顯示，長輩好讀\n✅ 不規則脈搏自動提示\n✅ 記憶儲存60筆，掌握趨勢\n\n💰 門市優惠中，歡迎洽詢！\n"
+    },
+    {
+      "id": "card_6",
+      "title": "Card 6 標題（請修改）",
+      "imageUrl": "https://duketu0918-crypto.github.io/wellcare-webhook/assets/bp_aug.png",
+      "action_text": "card6_info",
+      "reply_text": "🩺【居家健康守護 從量血壓開始】\n\n歐姆龍血壓計 115年8月限時優惠\n精準測量、簡單操作，居家自我健康管理首選！\n\n✅ 醫療級精準感測\n✅ 大螢幕數字顯示，長輩好讀\n✅ 不規則脈搏自動提示\n✅ 記憶儲存60筆，掌握趨勢\n\n💰 門市優惠中，歡迎洽詢！\n"
     }
   ]
 }
