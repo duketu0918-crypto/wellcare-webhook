@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 維康醫療用品 LINE OA 集中管理控制台
-main_gui.py v2.4.1
+main_gui.py v2.4.3
 新增：🚀 同步到 GitHub 按鈕 + _git_push() + git_log 區塊
-其餘所有功能與 v2.3.0 完全相同
+其餘所有功能維持不變；修正 GitHub 同步流程
 """
 
 import tkinter as tk
@@ -162,7 +162,7 @@ class App(tk.Tk):
                 w.bind("<Leave>",    lambda e, w=lbl, k=key:
                        w.config(fg="white" if self.cur_page==k else C["sidebar_fg"]))
             self.sb_btns[key] = (f, lbl)
-        tk.Label(sb, text="v2.4.1", font=("Consolas",8),
+        tk.Label(sb, text="v2.4.3", font=("Consolas",8),
                  bg=C["sidebar_bg"], fg="#555").pack(side="bottom", pady=6)
 
     def _nav_to(self, key):
@@ -487,49 +487,151 @@ class App(tk.Tk):
             self._rm_log_msg("=== 批次部署完成 ===")
         self._rm_run(run)
 
-    # ── 輪播管理 (v2.4.1：新增 Git Push) ─────────────────────
+    # ── 輪播管理 (v2.4.3：修正 Git 同步與衝突保護) ─────────────────
     def _git_push(self, log_widget):
         def _log(msg):
             log_widget.config(state="normal")
             log_widget.insert("end", "[" + datetime.now().strftime("%H:%M:%S") + "] " + msg + "\n")
-            log_widget.see("end"); log_widget.config(state="disabled")
+            log_widget.see("end")
+            log_widget.config(state="disabled")
+
         def run():
             _log("▶ 開始同步到 GitHub...")
             try:
                 def runcmd(cmd):
-                    r = subprocess.run(cmd, capture_output=True, text=True,
-                                       encoding="utf-8", errors="replace", cwd=BASE_DIR)
+                    r = subprocess.run(
+                        cmd,
+                        capture_output=True,
+                        text=True,
+                        encoding="utf-8",
+                        errors="replace",
+                        cwd=BASE_DIR
+                    )
                     return r.returncode, (r.stdout + r.stderr).strip()
 
-                runcmd(["git","add","data/"])
+                # 0. 先檢查 Git 是否處於 conflict / 未完成 rebase 狀態
+                rc, status = runcmd(["git", "status", "--short", "--branch"])
 
-                rc, out = runcmd(["git","status","--porcelain"])
-                if not out.strip():
-                    _log("ℹ️ 沒有新變更，略過 commit")
-                else:
+                if "rebase in progress" in status.lower() or "rebase-merge" in status.lower():
+                    _log("❌ 偵測到未完成的 rebase。")
+                    _log("請先處理或取消 rebase，再重新同步。")
+                    _log("取消指令：git rebase --abort")
+                    return
+
+                # U / AA / UU / DD 等代表尚有未合併檔案。
+                unmerged = []
+                for line in status.splitlines():
+                    if len(line) >= 2 and (
+                        "U" in line[:2] or line[:2] in ("AA", "DD")
+                    ):
+                        unmerged.append(line)
+
+                if unmerged:
+                    _log("❌ 偵測到 Git conflict，停止同步，避免再次卡住。")
+                    for line in unmerged[:10]:
+                        _log("   " + line)
+                    _log("👉 請先在專案資料夾處理 conflict，再重新同步。")
+                    return
+
+                # 1. 只加入 data/ 變更；main_gui.py 不會被日常同步自動加入
+                rc, out = runcmd(["git", "add", "data/"])
+                if rc != 0:
+                    _log("❌ git add 失敗: " + out[:500])
+                    return
+
+                # 2. 只根據「已暫存」內容判斷是否需要 commit。
+                #    不再用 git status --porcelain，避免 unstaged 的 main_gui.py
+                #    被誤判成待 commit 而造成 commit 失敗。
+                rc, staged = runcmd(["git", "diff", "--cached", "--quiet"])
+                if rc == 1:
                     commit_msg = "[GUI] update " + datetime.now().strftime("%Y-%m-%d %H:%M")
-                    rc, out = runcmd(["git","commit","-m", commit_msg])
-                    prefix = "✅ commit OK  " if rc == 0 else "❌ commit NG  "
-                    _log(prefix + out[:120])
+                    rc, out = runcmd(["git", "commit", "-m", commit_msg])
+                    if rc != 0:
+                        _log("❌ commit 失敗: " + out[:800])
+                        return
+                    _log("✅ commit OK  " + out[:180])
+                elif rc == 0:
+                    _log("ℹ️ data/ 沒有新變更，直接同步遠端。")
+                else:
+                    _log("❌ 無法判斷暫存區狀態: " + staged[:500])
+                    return
 
-                for attempt in range(1, 4):
-                    rc, out = runcmd(["git","push","origin","main"])
+                # 3. 先 fetch，取得 GitHub 最新版本
+                rc, out = runcmd(["git", "fetch", "origin", "main"])
+                if rc != 0:
+                    _log("❌ git fetch 失敗: " + out[:500])
+                    return
+                _log("✅ 已取得 GitHub 最新版本")
+
+                # 4. 檢查本機與遠端是否分叉
+                rc, counts = runcmd([
+                    "git", "rev-list", "--left-right", "--count", "main...origin/main"
+                ])
+                if rc != 0:
+                    _log("❌ 無法判斷本機/遠端版本差異: " + counts[:300])
+                    return
+
+                parts = counts.split()
+                ahead = int(parts[0]) if len(parts) >= 1 else 0
+                behind = int(parts[1]) if len(parts) >= 2 else 0
+
+                _log(f"ℹ️ 版本狀態：本機領先 {ahead}，遠端領先 {behind}")
+
+                # 5. 遠端有新 commit：執行一次 rebase。
+                if behind > 0:
+                    _log("🔄 GitHub 有新版本，執行 pull --rebase...")
+                    rc, out = runcmd([
+                        "git", "pull", "--rebase", "--autostash", "origin", "main"
+                    ])
+                    if rc != 0:
+                        _log("❌ pull --rebase 失敗，已停止自動重試。")
+                        _log(out[:1200])
+                        _log("👉 請先處理 Git conflict 後再同步。")
+                        return
+                    _log("✅ pull --rebase 完成")
+
+                # 6. push
+                rc, out = runcmd(["git", "push", "origin", "main"])
+                if rc == 0:
+                    _log("✅ git push OK → " + out[:180])
+                    _log("🚀 已推送！Render 約2分鐘後自動更新。")
+                    return
+
+                # 7. push 期間若遠端剛好又有新 commit，只再同步一次
+                if "fetch first" in out.lower() or "rejected" in out.lower() or "non-fast-forward" in out.lower():
+                    _log("⚠️ Push 時 GitHub 剛好又有新版本，重新同步一次...")
+
+                    rc, fetch_out = runcmd(["git", "fetch", "origin", "main"])
+                    if rc != 0:
+                        _log("❌ 第二次 fetch 失敗: " + fetch_out[:500])
+                        return
+
+                    rc, rebase_out = runcmd([
+                        "git", "pull", "--rebase", "--autostash", "origin", "main"
+                    ])
+                    if rc != 0:
+                        _log("❌ 第二次 pull --rebase 失敗。")
+                        _log(rebase_out[:1200])
+                        _log("👉 請處理 Git conflict 後再同步。")
+                        return
+
+                    rc, push_out = runcmd(["git", "push", "origin", "main"])
                     if rc == 0:
-                        _log("✅ git push OK → " + out[:80])
+                        _log("✅ git push OK → " + push_out[:180])
                         _log("🚀 已推送！Render 約2分鐘後自動更新。")
-                        return
-                    if "fetch first" in out or "rejected" in out:
-                        _log("⚠️ 第" + str(attempt) + "次被拒，自動 pull --rebase...")
-                        runcmd(["git","pull","origin","main","--rebase"])
                     else:
-                        _log("❌ push 失敗: " + out[:200])
-                        return
-                _log("❌ 重試3次仍失敗，請手動執行 git pull --rebase")
+                        _log("❌ 第二次 push 仍失敗: " + push_out[:800])
+                    return
+
+                _log("❌ push 失敗: " + out[:800])
+
             except FileNotFoundError:
                 _log("❌ 找不到 git 指令，請確認 Git 已安裝")
             except Exception as e:
                 _log("❌ 錯誤: " + str(e))
+
         threading.Thread(target=run, daemon=True).start()
+
     def _page_carousel(self):
         parent = self.content
         for w in parent.winfo_children(): w.destroy()
